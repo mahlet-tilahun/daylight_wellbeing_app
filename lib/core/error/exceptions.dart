@@ -1,3 +1,4 @@
+// lib/core/error/exceptions.dart
 // Custom exceptions thrown in the data layer.
 // These get caught and converted to Failures in repositories.
 

@@ -1,3 +1,4 @@
+// lib/core/utils/validators.dart
 // Form validation helpers used across auth screens.
 
 class Validators {

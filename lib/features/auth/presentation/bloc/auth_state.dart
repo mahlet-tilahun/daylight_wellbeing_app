@@ -1,3 +1,4 @@
+// lib/features/auth/presentation/bloc/auth_state.dart
 // All possible UI states for the auth feature.
 
 import 'package:equatable/equatable.dart';

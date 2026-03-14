@@ -1,3 +1,4 @@
+// lib/features/auth/presentation/bloc/auth_bloc.dart
 // Handles auth events and emits the appropriate states.
 // UI never talks to Firebase directly — it only talks to this BLoC.
 
@@ -97,7 +98,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   /// Handle logout
-  Future<void> _onLogout(LogoutRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onLogout(
+    LogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthLoading());
     final result = await logoutUser();
     if (result.isSuccess) {

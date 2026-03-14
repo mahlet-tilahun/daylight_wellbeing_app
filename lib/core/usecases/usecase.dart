@@ -1,5 +1,7 @@
+// lib/core/usecases/usecase.dart
 // Base interface for all use cases.
 // Every use case takes Params and returns Either<Failure, Type>.
+// We use a simple Result type instead of dartz for simplicity.
 
 /// Simple result type: either a failure or a success value
 class Result<T> {

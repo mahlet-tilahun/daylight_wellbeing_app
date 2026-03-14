@@ -1,3 +1,4 @@
+// lib/core/utils/constants.dart
 // App-wide constants used across features.
 
 class AppConstants {

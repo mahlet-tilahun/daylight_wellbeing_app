@@ -1,3 +1,4 @@
+// lib/features/auth/presentation/bloc/auth_event.dart
 // All possible actions the user can trigger in auth screens.
 
 import 'package:equatable/equatable.dart';
@@ -19,7 +20,10 @@ class LoginWithEmailRequested extends AuthEvent {
   final String email;
   final String password;
 
-  const LoginWithEmailRequested({required this.email, required this.password});
+  const LoginWithEmailRequested({
+    required this.email,
+    required this.password,
+  });
 
   @override
   List<Object> get props => [email, password];
