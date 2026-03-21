@@ -1,4 +1,4 @@
-// lib/features/notes/domain/entities/note_entity.dart
+// lib/features/journal/domain/entities/note_entity.dart
 
 import 'package:equatable/equatable.dart';
 

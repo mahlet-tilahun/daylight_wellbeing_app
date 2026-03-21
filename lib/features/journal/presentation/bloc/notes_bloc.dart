@@ -1,4 +1,4 @@
-// lib/features/notes/presentation/bloc/notes_bloc.dart
+// lib/features/journal/presentation/bloc/notes_bloc.dart
 // Events, States, and BLoC for the notes feature.
 
 import 'package:equatable/equatable.dart';

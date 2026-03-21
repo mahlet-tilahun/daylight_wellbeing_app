@@ -25,17 +25,36 @@ class LoadMoodsRequested extends MoodEvent {
 class AddMoodRequested extends MoodEvent {
   final String userId;
   final String moodType;
-  const AddMoodRequested({required this.userId, required this.moodType});
+  final String note;
+  const AddMoodRequested({
+    required this.userId,
+    required this.moodType,
+    this.note = '',
+  });
   @override
-  List<Object> get props => [userId, moodType];
+  List<Object> get props => [userId, moodType, note];
 }
 
 class DeleteMoodRequested extends MoodEvent {
   final String moodId;
-  final String userId; // needed to reload list after delete
+  final String userId;
   const DeleteMoodRequested({required this.moodId, required this.userId});
   @override
   List<Object> get props => [moodId, userId];
+}
+
+/// Allows editing the text note attached to an existing mood entry
+class UpdateMoodNoteRequested extends MoodEvent {
+  final String moodId;
+  final String userId;
+  final String note;
+  const UpdateMoodNoteRequested({
+    required this.moodId,
+    required this.userId,
+    required this.note,
+  });
+  @override
+  List<Object> get props => [moodId, userId, note];
 }
 
 // ── STATES ────────────────────────────────────────────────
@@ -74,15 +93,18 @@ class MoodBloc extends Bloc<MoodEvent, MoodState> {
   final AddMood addMood;
   final GetMoods getMoods;
   final DeleteMood deleteMood;
+  final UpdateMoodNote updateMoodNote;
 
   MoodBloc({
     required this.addMood,
     required this.getMoods,
     required this.deleteMood,
+    required this.updateMoodNote,
   }) : super(const MoodInitial()) {
     on<LoadMoodsRequested>(_onLoad);
     on<AddMoodRequested>(_onAdd);
     on<DeleteMoodRequested>(_onDelete);
+    on<UpdateMoodNoteRequested>(_onUpdateNote);
   }
 
   Future<void> _onLoad(
@@ -100,9 +122,13 @@ class MoodBloc extends Bloc<MoodEvent, MoodState> {
       AddMoodRequested event, Emitter<MoodState> emit) async {
     emit(const MoodLoading());
     final result = await addMood(
-        AddMoodParams(userId: event.userId, moodType: event.moodType));
+      AddMoodParams(
+        userId: event.userId,
+        moodType: event.moodType,
+        note: event.note,
+      ),
+    );
     if (result.isSuccess) {
-      // Reload all moods after adding
       final moods = await getMoods(GetMoodsParams(userId: event.userId));
       if (moods.isSuccess) {
         emit(MoodLoaded(moods.data!));
@@ -117,9 +143,9 @@ class MoodBloc extends Bloc<MoodEvent, MoodState> {
   Future<void> _onDelete(
       DeleteMoodRequested event, Emitter<MoodState> emit) async {
     emit(const MoodLoading());
-    final result = await deleteMood(DeleteMoodParams(moodId: event.moodId));
+    final result =
+        await deleteMood(DeleteMoodParams(moodId: event.moodId));
     if (result.isSuccess) {
-      // Reload all moods after deleting
       final moods = await getMoods(GetMoodsParams(userId: event.userId));
       if (moods.isSuccess) {
         emit(MoodLoaded(moods.data!));
@@ -128,6 +154,33 @@ class MoodBloc extends Bloc<MoodEvent, MoodState> {
       }
     } else {
       emit(MoodError(result.error!));
+    }
+  }
+
+  /// Optimistically update the note text, then confirm with backend
+  Future<void> _onUpdateNote(
+      UpdateMoodNoteRequested event, Emitter<MoodState> emit) async {
+    // Optimistic update — show change in UI immediately
+    final currentState = state;
+    if (currentState is MoodLoaded) {
+      final updated = currentState.moods.map((m) {
+        if (m.moodId == event.moodId) return m.copyWith(note: event.note);
+        return m;
+      }).toList();
+      emit(MoodLoaded(updated));
+    }
+
+    final result = await updateMoodNote(
+      UpdateMoodNoteParams(moodId: event.moodId, note: event.note),
+    );
+    if (result.isFailure) {
+      // Revert on failure
+      final moods = await getMoods(GetMoodsParams(userId: event.userId));
+      if (moods.isSuccess) {
+        emit(MoodLoaded(moods.data!));
+      } else {
+        emit(MoodError(moods.error!));
+      }
     }
   }
 }

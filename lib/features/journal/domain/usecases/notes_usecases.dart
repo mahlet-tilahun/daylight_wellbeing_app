@@ -1,4 +1,4 @@
-// lib/features/notes/domain/usecases/notes_usecases.dart
+// lib/features/journal/domain/usecases/notes_usecases.dart
 
 import '../../../../core/usecases/usecase.dart';
 import '../entities/note_entity.dart';
