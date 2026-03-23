@@ -9,13 +9,7 @@ class HelplineEntity extends Equatable {
   final String helplineName;
   final String flagEmoji;
 
-  const HelplineEntity({
-    required this.country,
-    required this.emergencyNumber,
-    required this.helplineNumber,
-    required this.helplineName,
-    required this.flagEmoji,
-  });
+  
 
   @override
   List<Object> get props =>
