@@ -9,5 +9,13 @@ class HelplineRepositoryImpl implements HelplineRepository {
   final HelplineLocalDataSource localDataSource;
   HelplineRepositoryImpl({required this.localDataSource});
 
-  
+  @override
+  Result<List<HelplineEntity>> getHelplines() {
+    try {
+      final helplines = localDataSource.getHelplines();
+      return Result.success(helplines);
+    } catch (e) {
+      return Result.failure(e.toString());
+    }
+  }
 }
