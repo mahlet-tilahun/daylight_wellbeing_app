@@ -1,49 +1,66 @@
-# Daylight – Mental Wellbeing App
+# Daylight 🌅
 
-A Flutter app built with Clean Architecture, BLoC state management, and Firebase.
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-blue?logo=flutter)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.x-blue?logo=dart)](https://dart.dev)
 
----
+**Daylight** is a cross-platform mental wellbeing companion app built with Flutter, following Clean Architecture principles and BLoC state management. Track your mood, journal thoughts, access helplines, and more—all with light/dark theme support.
 
-## Running the App (Fake Data Mode — No Firebase needed)
 
-```bash
-flutter pub get
-flutter run
-```
 
-`useFakeData = true` is set in `main.dart` by default. The app runs fully with in-memory fake data — no Firebase setup required for UI development.
+## ✨ Features
 
----
+- **Authentication**: Secure login and registration with Firebase Auth.
+- **Mood Tracking**: Log, view, edit, and delete daily moods with CRUD operations.
+- **Journal/Notes**: Private notes for reflections and wellbeing journal.
+- **Helpline Contacts**: Quick access to support helplines.
+- **Home Dashboard**: Personalized overview of your wellbeing journey.
+- **Settings**: Customize theme (light/dark mode).
+- **Fake Data Mode**: Run fully without Firebase for development.
+- **Cross-Platform**: Android, iOS, Web, Desktop (Windows/macOS/Linux).
 
-## Switching to Real Firebase
 
-1. Complete Firebase setup (Person 3 – Divine's task)
-2. In `main.dart`, set `useFakeData = false`
-3. Uncomment the Firebase initialization block in `main.dart`
 
----
+## 🚀 Quick Start (Fake Data Mode — No Firebase Needed)
 
-## Branch Strategy
+1. Clone the repo and navigate to the project directory.
+2. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+3. Run the app:
+   ```bash
+   flutter run
+   ```
 
-| Person | Name | Branch |
-|--------|------|--------|
-| Person 1 | Solace | `solace-ui` |
-| Person 2 | Mahlet | `mahlet-bloc` |
-| Person 3 | Divine | `divine-firebase` |
-| Person 4 | Olive | `olive-integration` |
-| Person 5 | Maya | `maya-docs` |
+The app defaults to `useFakeData = true` in `lib/main.dart`, providing in-memory data for full UI testing without backend setup.
 
-```bash
-# Create and switch to your branch
-git checkout -b your-branch-name
+## 🔧 Full Firebase Setup
 
-# Push your branch
-git push origin your-branch-name
-```
+1. Install FlutterFire CLI: `dart pub global activate flutterfire_cli`
+2. Run `flutterfire configure` in the project root to generate `firebase_options.dart`.
+3. In `lib/main.dart`:
+   - Set `useFakeData = false`
+   - Ensure Firebase init is uncommented (already present).
+4. Update Firebase console with your Android/iOS bundle IDs and SHA-1.
+5. Run `flutter pub get && flutter run`.
 
----
+## 🛠️ Tech Stack
 
-## Architecture
+| Category                 | Technologies                                      |
+| ------------------------ | ------------------------------------------------- |
+| **Framework**            | Flutter (3.x), Dart (3.x)                         |
+| **State Management**     | flutter_bloc, equatable                           |
+| **Architecture**         | Clean Architecture                                |
+| **Backend/Storage**      | Firebase Auth, Cloud Firestore, SharedPreferences |
+| **Dependency Injection** | get_it                                            |
+| **Testing**              | flutter_test (unit/widget tests)                  |
+| **Platforms**            | Android, iOS, Web, Linux, macOS, Windows          |
+
+
+
+## 🏗️ Architecture
+
+Daylight uses **Clean Architecture** with **BLoC pattern** for separation of concerns:
 
 ```
 lib/
@@ -52,22 +69,70 @@ lib/
 │   ├── auth/          # Login, Register
 │   ├── home/          # Dashboard
 │   ├── mood/          # Mood tracking CRUD
-│   ├── journal/       # Notes/Journal CRUD
+│   ├── notes/         # Notes/Journal CRUD
 │   ├── helpline/      # Helpline contacts
 │   └── settings/      # Theme toggle
-├── injection_container.dart       # Real Firebase DI
-├── injection_container_fake.dart  # Fake/test DI
+├── injection_container.dart     # Real Firebase DI
+├── injection_container_fake.dart # Fake/test DI
 └── main.dart
 ```
 
 Each feature follows: `data/` → `domain/` → `presentation/`
 
----
+- **Domain Layer**: Pure business logic, entities, usecases.
+- **Data Layer**: Repositories, remote/local datasources.
+- **Presentation Layer**: BLoC/Cubit + UI.
 
-## Team Task Summary
+Dependency Injection via `get_it`. State management: `flutter_bloc`.
 
-- **Solace**: All UI screens and widgets
-- **Mahlet**: Domain layer (entities, repos, usecases) + BLoC
-- **Divine**: Firebase setup, Firestore, repository implementations
-- **Olive**: Wiring BLoC ↔ usecases ↔ repositories, CRUD, error handling
-- **Maya**: Tests, documentation, Git monitoring, demo prep
+## 📁 Project Structure
+
+```
+lib/
+├── core/                 # Source code shared utilities
+├── features/             # Feature-specific modules
+├── android/, ios/, etc.  # Platform configs
+├── pubspec.yaml          # Dependencies
+├── test/                 # Tests
+└── README.md             # Documentation
+```
+
+## 🧪 Running Tests
+
+```bash
+flutter test
+```
+
+Includes unit tests (auth validators, mood usecases) and widget tests (login screen).
+
+## 🚀 Building for Release
+
+- **Android APK**:
+  ```bash
+  flutter build apk --release
+  ```
+- **iOS**:
+  ```bash
+  flutter build ios --release
+  ```
+- **Web**:
+  ```bash
+  flutter build web
+  ```
+- **Windows**:
+  ```bash
+  flutter build windows --release
+  ```
+
+Pro tip: Use `--obfuscate --split-debug-info=build/debug-info` for production.
+
+## 👥 Team
+
+| Team Member       | Role                                              |
+| ----------------- | ------------------------------------------------- |
+| Solace (Person 1) | All UI screens and widgets                        |
+| Mahlet (Person 2) | Domain layer (entities, repos, usecases) + BLoC   |
+| Divine (Person 3) | Firebase setup, Firestore repositories            |
+| Olive (Person 4)  | BLoC integration, CRUD operations, error handling |
+| Agertu (Person 5)   | Tests, documentation, demo preparation            |
+
