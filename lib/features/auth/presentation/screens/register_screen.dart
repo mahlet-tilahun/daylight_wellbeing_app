@@ -34,12 +34,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _onRegisterPressed() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-            RegisterRequested(
-              name: _nameController.text.trim(),
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+        RegisterRequested(
+          name: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 
@@ -51,8 +51,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           if (state is AuthError) {
             showErrorSnackbar(context, state.message);
           }
-          if (state is AuthAuthenticated) {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+          if (state is AuthEmailNotVerified) {
+            // Registration successful — pop back to let _AuthGate show verification screen
+            Navigator.of(context).pop();
           }
         },
         builder: (context, state) {
@@ -78,8 +79,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               colors: [Color(0xFFFFD700), Color(0xFFFF8C00)],
                             ),
                           ),
-                          child: const Icon(Icons.wb_sunny,
-                              color: Colors.white, size: 35),
+                          child: const Icon(
+                            Icons.wb_sunny,
+                            color: Colors.white,
+                            size: 35,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         const Text(
@@ -118,8 +122,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               : Icons.visibility,
                           color: Colors.grey,
                         ),
-                        onPressed: () =>
-                            setState(() => _showPassword = !_showPassword), // local UI state only — not business logic
+                        onPressed: () => setState(
+                          () => _showPassword = !_showPassword,
+                        ), // local UI state only — not business logic
                       ),
                     ),
                     const SizedBox(height: 24),

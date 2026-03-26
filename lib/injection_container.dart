@@ -33,7 +33,7 @@ import 'features/settings/presentation/bloc/settings_cubit.dart';
 final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
-  // ── External ───────────────────────────────────────────
+  // External
   final sharedPrefs = await SharedPreferences.getInstance();
   sl.registerSingleton<SharedPreferences>(sharedPrefs);
   sl.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
@@ -41,7 +41,7 @@ Future<void> initDependencies() async {
   sl.registerSingleton<GoogleSignIn>(GoogleSignIn());
   sl.registerLazySingleton<Uuid>(() => const Uuid());
 
-  // ── Auth ───────────────────────────────────────────────
+  // Auth
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(
       firebaseAuth: sl(),
@@ -58,6 +58,8 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => LogoutUser(sl()));
   sl.registerLazySingleton(() => GetCurrentUser(sl()));
   sl.registerLazySingleton(() => SendPasswordReset(sl()));
+  sl.registerLazySingleton(() => CheckEmailVerified(sl()));
+  sl.registerLazySingleton(() => ResendVerificationEmail(sl()));
   sl.registerFactory(
     () => AuthBloc(
       loginUser: sl(),
@@ -65,11 +67,13 @@ Future<void> initDependencies() async {
       registerUser: sl(),
       logoutUser: sl(),
       getCurrentUser: sl(),
-    sendPasswordReset: sl(),
+      sendPasswordReset: sl(),
+      checkEmailVerified: sl(),
+      resendVerificationEmail: sl(),
     ),
   );
 
-  // ── Mood ───────────────────────────────────────────────
+  // Mood
   sl.registerLazySingleton<MoodRemoteDataSource>(
     () => MoodRemoteDataSourceImpl(firestore: sl(), uuid: sl()),
   );
@@ -81,10 +85,15 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => DeleteMood(sl()));
   sl.registerLazySingleton(() => UpdateMoodNote(sl()));
   sl.registerFactory(
-    () => MoodBloc(addMood: sl(), getMoods: sl(), deleteMood: sl(), updateMoodNote: sl()),
+    () => MoodBloc(
+      addMood: sl(),
+      getMoods: sl(),
+      deleteMood: sl(),
+      updateMoodNote: sl(),
+    ),
   );
 
-  // ── Journal (Notes) ────────────────────────────────────
+  // Journal (Notes)
   sl.registerLazySingleton<NotesRemoteDataSource>(
     () => NotesRemoteDataSourceImpl(firestore: sl(), uuid: sl()),
   );
@@ -106,7 +115,7 @@ Future<void> initDependencies() async {
     ),
   );
 
-  // ── Helpline ───────────────────────────────────────────
+  // Helpline
   sl.registerLazySingleton<HelplineLocalDataSource>(
     () => HelplineLocalDataSourceImpl(),
   );
@@ -115,7 +124,7 @@ Future<void> initDependencies() async {
   );
   sl.registerFactory(() => HelplineCubit(repository: sl()));
 
-  // ── Core ───────────────────────────────────────────────
+  // Core
   sl.registerFactory(() => BottomNavCubit());
   sl.registerFactory(() => SettingsCubit(sharedPreferences: sl()));
 }

@@ -11,6 +11,7 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
+import 'features/auth/presentation/screens/email_verification_screen.dart';
 import 'features/helpline/presentation/bloc/helpline_cubit.dart';
 import 'features/home/presentation/screens/main_shell.dart';
 import 'features/mood/presentation/bloc/mood_bloc.dart';
@@ -21,9 +22,7 @@ import 'injection_container.dart' as di;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.initDependencies();
   runApp(const DaylightApp());
 }
@@ -41,21 +40,11 @@ class DaylightApp extends StatelessWidget {
         BlocProvider<AuthBloc>(
           create: (_) => sl<AuthBloc>()..add(const AuthCheckRequested()),
         ),
-        BlocProvider<SettingsCubit>(
-          create: (_) => sl<SettingsCubit>(),
-        ),
-        BlocProvider<BottomNavCubit>(
-          create: (_) => sl<BottomNavCubit>(),
-        ),
-        BlocProvider<MoodBloc>(
-          create: (_) => sl<MoodBloc>(),
-        ),
-        BlocProvider<NotesBloc>(
-          create: (_) => sl<NotesBloc>(),
-        ),
-        BlocProvider<HelplineCubit>(
-          create: (_) => sl<HelplineCubit>(),
-        ),
+        BlocProvider<SettingsCubit>(create: (_) => sl<SettingsCubit>()),
+        BlocProvider<BottomNavCubit>(create: (_) => sl<BottomNavCubit>()),
+        BlocProvider<MoodBloc>(create: (_) => sl<MoodBloc>()),
+        BlocProvider<NotesBloc>(create: (_) => sl<NotesBloc>()),
+        BlocProvider<HelplineCubit>(create: (_) => sl<HelplineCubit>()),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settingsState) {
@@ -110,6 +99,10 @@ class _AuthGate extends StatelessWidget {
 
         if (state is AuthAuthenticated) {
           return const MainShell();
+        }
+
+        if (state is AuthEmailNotVerified) {
+          return const EmailVerificationScreen();
         }
 
         return const LoginScreen();

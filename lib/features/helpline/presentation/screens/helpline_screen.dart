@@ -23,7 +23,6 @@ class _HelplineScreenState extends State<HelplineScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final pri = AppTheme.textPrimary(context);
     final sec = AppTheme.textSecondary(context);
 
     return Scaffold(
@@ -62,10 +61,17 @@ class _HelplineScreenState extends State<HelplineScreen> {
                       backgroundColor: AppTheme.accentGreen,
                       foregroundColor: AppTheme.navyDark,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    child: const Text('Call Helpline',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: const Text(
+                      'Call Helpline',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -84,9 +90,9 @@ class _HelplineScreenState extends State<HelplineScreen> {
     );
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open maps')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not open maps')));
       }
     }
   }
@@ -109,23 +115,39 @@ class _HelplineScreenState extends State<HelplineScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: bgColor,
-        title: Text('Call Helpline',
-            style: TextStyle(color: AppTheme.textPrimary(context))),
+        title: Text(
+          'Call Helpline',
+          style: TextStyle(color: AppTheme.textPrimary(context)),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: helplines.map((h) => ListTile(
-            leading: Text(h.flagEmoji, style: const TextStyle(fontSize: 24)),
-            title: Text(h.helplineName,
-                style: TextStyle(color: AppTheme.textPrimary(context))),
-            subtitle: Text(h.helplineNumber,
-                style: const TextStyle(color: AppTheme.accentGreen)),
-            onTap: () => Navigator.pop(ctx),
-          )).toList(),
+          children: helplines
+              .map(
+                (h) => ListTile(
+                  leading: Text(
+                    h.flagEmoji,
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  title: Text(
+                    h.helplineName,
+                    style: TextStyle(color: AppTheme.textPrimary(context)),
+                  ),
+                  subtitle: Text(
+                    h.helplineNumber,
+                    style: const TextStyle(color: AppTheme.accentGreen),
+                  ),
+                  onTap: () => Navigator.pop(ctx),
+                ),
+              )
+              .toList(),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Close', style: TextStyle(color: AppTheme.accentBlue)),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: AppTheme.accentBlue),
+            ),
           ),
         ],
       ),
@@ -148,18 +170,34 @@ class _HelplineCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [
-              Text(helpline.flagEmoji, style: const TextStyle(fontSize: 24)),
-              const SizedBox(width: 10),
-              Text(helpline.country,
-                  style: TextStyle(color: pri, fontWeight: FontWeight.bold, fontSize: 16)),
-            ]),
+            Row(
+              children: [
+                Text(helpline.flagEmoji, style: const TextStyle(fontSize: 24)),
+                const SizedBox(width: 10),
+                Text(
+                  helpline.country,
+                  style: TextStyle(
+                    color: pri,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 12),
-            _NumberRow(icon: Icons.phone_outlined, label: helpline.emergencyNumber,
-                sublabel: 'Emergency', sec: sec),
+            _NumberRow(
+              icon: Icons.phone_outlined,
+              label: helpline.emergencyNumber,
+              sublabel: 'Emergency',
+              sec: sec,
+            ),
             const SizedBox(height: 8),
-            _NumberRow(icon: Icons.support_agent_outlined, label: helpline.helplineNumber,
-                sublabel: helpline.helplineName, sec: sec),
+            _NumberRow(
+              icon: Icons.support_agent_outlined,
+              label: helpline.helplineNumber,
+              sublabel: helpline.helplineName,
+              sec: sec,
+            ),
           ],
         ),
       ),
@@ -172,19 +210,30 @@ class _NumberRow extends StatelessWidget {
   final String label;
   final String sublabel;
   final Color sec;
-  const _NumberRow({required this.icon, required this.label,
-      required this.sublabel, required this.sec});
+  const _NumberRow({
+    required this.icon,
+    required this.label,
+    required this.sublabel,
+    required this.sec,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Icon(icon, color: sec, size: 18),
-      const SizedBox(width: 8),
-      Text(label, style: TextStyle(
-          color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
-      const SizedBox(width: 8),
-      Text(sublabel, style: TextStyle(color: sec, fontSize: 12)),
-    ]);
+    return Row(
+      children: [
+        Icon(icon, color: sec, size: 18),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            color: AppTheme.textPrimary(context),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(sublabel, style: TextStyle(color: sec, fontSize: 12)),
+      ],
+    );
   }
 }
 
@@ -192,15 +241,28 @@ class _ResourceButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _ResourceButton({required this.icon, required this.label, required this.onTap});
+  const _ResourceButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: const Icon(Icons.location_on_outlined, color: AppTheme.accentGreen),
-        title: Text(label, style: TextStyle(color: AppTheme.textPrimary(context))),
-        trailing: Icon(Icons.chevron_right, color: AppTheme.textSecondary(context)),
+        leading: const Icon(
+          Icons.location_on_outlined,
+          color: AppTheme.accentGreen,
+        ),
+        title: Text(
+          label,
+          style: TextStyle(color: AppTheme.textPrimary(context)),
+        ),
+        trailing: Icon(
+          Icons.chevron_right,
+          color: AppTheme.textSecondary(context),
+        ),
         onTap: onTap,
       ),
     );

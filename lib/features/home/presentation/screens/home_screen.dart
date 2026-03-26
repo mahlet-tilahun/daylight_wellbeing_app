@@ -27,16 +27,34 @@ class _HomeScreenState extends State<HomeScreen> {
   int _tipIndex = 0;
 
   final List<Map<String, String>> _wellbeingTips = [
-    {'title': 'Breath', 'body': 'Pause for 3 slow breaths before starting a task.'},
-    {'title': 'Move',   'body': 'Take a 5-minute walk to reset your focus.'},
-    {'title': 'Hydrate','body': 'Drink a glass of water — your brain needs it.'},
+    {
+      'title': 'Breath',
+      'body': 'Pause for 3 slow breaths before starting a task.',
+    },
+    {'title': 'Move', 'body': 'Take a 5-minute walk to reset your focus.'},
+    {
+      'title': 'Hydrate',
+      'body': 'Drink a glass of water — your brain needs it.',
+    },
   ];
 
   // Map each sound name to its asset file path
   final List<Map<String, String>> _sounds = [
-    {'name': 'Sleeping', 'duration': '2-5 minutes to unwind', 'asset': 'assets/sounds/sleeping.mp3'},
-    {'name': 'Rain',     'duration': '5-10 minutes of calm',  'asset': 'assets/sounds/rain.mp3'},
-    {'name': 'Forest',   'duration': '3-8 minutes of nature', 'asset': 'assets/sounds/forest.mp3'},
+    {
+      'name': 'Sleeping',
+      'duration': '2-5 minutes to unwind',
+      'asset': 'assets/sounds/sleeping.mp3',
+    },
+    {
+      'name': 'Rain',
+      'duration': '5-10 minutes of calm',
+      'asset': 'assets/sounds/rain.mp3',
+    },
+    {
+      'name': 'Forest',
+      'duration': '3-8 minutes of nature',
+      'asset': 'assets/sounds/forest.mp3',
+    },
   ];
 
   @override
@@ -57,7 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
       // Different sound tapped — stop current, load and loop new one
       await _audioPlayer.stop();
       await _audioPlayer.setAsset(assetPath);
-      await _audioPlayer.setLoopMode(LoopMode.one); // loop until manually stopped
+      await _audioPlayer.setLoopMode(
+        LoopMode.one,
+      ); // loop until manually stopped
       await _audioPlayer.play();
       setState(() => _playingSound = name);
     }
@@ -67,7 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       context.read<MoodBloc>().add(
-            AddMoodRequested(userId: authState.user.uid, moodType: moodType));
+        AddMoodRequested(userId: authState.user.uid, moodType: moodType),
+      );
       showSuccessSnackbar(context, '$moodType mood logged! ✓');
     }
   }
@@ -82,7 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, authState) {
           final authName = authState is AuthAuthenticated
-              ? authState.user.name : 'Friend';
+              ? authState.user.name
+              : 'Friend';
           // Prefer saved display name from settings, fall back to auth name
           final settingsState = context.read<SettingsCubit>().state;
           final userName = settingsState.displayName.isNotEmpty
@@ -96,8 +118,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   _buildTopBar(userName, pri, sec),
                   const SizedBox(height: 20),
-                  Text('How are you feeling today?',
-                      style: TextStyle(color: pri, fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(
+                    'How are you feeling today?',
+                    style: TextStyle(
+                      color: pri,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   _buildMoodCheckIn(pri, sec),
                   const SizedBox(height: 20),
@@ -118,28 +146,43 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       children: [
         Container(
-          width: 40, height: 40,
+          width: 40,
+          height: 40,
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(colors: [Color(0xFFFFD700), Color(0xFFFF8C00)]),
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFD700), Color(0xFFFF8C00)],
+            ),
           ),
           child: const Icon(Icons.wb_sunny, color: Colors.white, size: 22),
         ),
         const SizedBox(width: 10),
-        Text('Daylight',
-            style: TextStyle(
-              color: AppTheme.isDark(context) ? AppTheme.accentBlue : AppTheme.lightPrimary,
-              fontWeight: FontWeight.bold, fontSize: 18)),
+        Text(
+          'Daylight',
+          style: TextStyle(
+            color: AppTheme.isDark(context)
+                ? AppTheme.accentBlue
+                : AppTheme.lightPrimary,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         const Spacer(),
-        Text('Good Morning $userName', style: TextStyle(color: sec, fontSize: 12)),
+        Text(
+          'Good Morning $userName',
+          style: TextStyle(color: sec, fontSize: 12),
+        ),
         IconButton(
           icon: Icon(Icons.settings_outlined, color: sec, size: 22),
-          onPressed: () => Navigator.push(context,
-              MaterialPageRoute(builder: (_) => const SettingsScreen())),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SettingsScreen()),
+          ),
         ),
         IconButton(
           icon: Icon(Icons.power_settings_new, color: sec, size: 22),
-          onPressed: () => context.read<AuthBloc>().add(const LogoutRequested()),
+          onPressed: () =>
+              context.read<AuthBloc>().add(const LogoutRequested()),
         ),
       ],
     );
@@ -152,19 +195,30 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Check in With Yourself',
-                style: TextStyle(color: pri, fontWeight: FontWeight.bold)),
+            Text(
+              'Check in With Yourself',
+              style: TextStyle(color: pri, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(AppConstants.moodTypes.length, (i) =>
-                GestureDetector(
+              children: List.generate(
+                AppConstants.moodTypes.length,
+                (i) => GestureDetector(
                   onTap: () => _logMood(AppConstants.moodTypes[i]),
-                  child: Column(children: [
-                    Text(AppConstants.moodEmojis[i], style: const TextStyle(fontSize: 36)),
-                    const SizedBox(height: 4),
-                    Text(AppConstants.moodTypes[i], style: TextStyle(color: sec, fontSize: 12)),
-                  ]),
+                  child: Column(
+                    children: [
+                      Text(
+                        AppConstants.moodEmojis[i],
+                        style: const TextStyle(fontSize: 36),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        AppConstants.moodTypes[i],
+                        style: TextStyle(color: sec, fontSize: 12),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -183,28 +237,45 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [
-              const Text('✳️', style: TextStyle(fontSize: 16)),
-              const SizedBox(width: 8),
-              Text('Well-being Tips', style: TextStyle(color: pri, fontWeight: FontWeight.bold)),
-            ]),
+            Row(
+              children: [
+                const Text('✳️', style: TextStyle(fontSize: 16)),
+                const SizedBox(width: 8),
+                Text(
+                  'Well-being Tips',
+                  style: TextStyle(color: pri, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
             const SizedBox(height: 12),
-            Text(tip['title']!, style: TextStyle(color: pri, fontWeight: FontWeight.bold, fontSize: 15)),
+            Text(
+              tip['title']!,
+              style: TextStyle(
+                color: pri,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
             const SizedBox(height: 6),
             Text(tip['body']!, style: TextStyle(color: sec, fontSize: 13)),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_wellbeingTips.length, (i) =>
-                GestureDetector(
-                  onTap: () => setState(() => _tipIndex = i), // local UI carousel state — no business logic
+              children: List.generate(
+                _wellbeingTips.length,
+                (i) => GestureDetector(
+                  onTap: () => setState(
+                    () => _tipIndex = i,
+                  ), // local UI carousel state — no business logic
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     width: _tipIndex == i ? 20 : 8,
                     height: 8,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4),
-                      color: _tipIndex == i ? dotActive : sec.withOpacity(0.4),
+                      color: _tipIndex == i
+                          ? dotActive
+                          : sec.withValues(alpha: 0.4),
                     ),
                   ),
                 ),
@@ -224,11 +295,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [
-              const Text('🎵', style: TextStyle(fontSize: 16)),
-              const SizedBox(width: 8),
-              Text('Relaxing Sounds', style: TextStyle(color: pri, fontWeight: FontWeight.bold)),
-            ]),
+            Row(
+              children: [
+                const Text('🎵', style: TextStyle(fontSize: 16)),
+                const SizedBox(width: 8),
+                Text(
+                  'Relaxing Sounds',
+                  style: TextStyle(color: pri, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
             const SizedBox(height: 12),
             ..._sounds.map((sound) {
               final isPlaying = _playingSound == sound['name'];
@@ -240,32 +316,46 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(sound['name']!,
-                              style: TextStyle(color: pri, fontWeight: FontWeight.bold)),
-                          Text(sound['duration']!, style: TextStyle(color: sec, fontSize: 12)),
+                          Text(
+                            sound['name']!,
+                            style: TextStyle(
+                              color: pri,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            sound['duration']!,
+                            style: TextStyle(color: sec, fontSize: 12),
+                          ),
                         ],
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => _toggleSound(
-                        sound['name']!,
-                        sound['asset']!,
-                      ),
+                      onTap: () =>
+                          _toggleSound(sound['name']!, sound['asset']!),
                       child: Container(
-                        width: 36, height: 20,
+                        width: 36,
+                        height: 20,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: isPlaying ? toggleActive : sec.withOpacity(0.2),
-                          border: Border.all(color: sec.withOpacity(0.4)),
+                          color: isPlaying
+                              ? toggleActive
+                              : sec.withValues(alpha: 0.2),
+                          border: Border.all(color: sec.withValues(alpha: 0.4)),
                         ),
                         child: AnimatedAlign(
                           duration: const Duration(milliseconds: 200),
-                          alignment: isPlaying ? Alignment.centerRight : Alignment.centerLeft,
+                          alignment: isPlaying
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
                           child: Container(
-                            width: 16, height: 16,
+                            width: 16,
+                            height: 16,
                             margin: const EdgeInsets.symmetric(horizontal: 2),
                             decoration: const BoxDecoration(
-                                shape: BoxShape.circle, color: Colors.white),
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),

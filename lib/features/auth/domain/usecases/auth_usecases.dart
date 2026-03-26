@@ -93,3 +93,19 @@ class SendPasswordResetParams {
   final String email;
   const SendPasswordResetParams({required this.email});
 }
+
+class CheckEmailVerified extends UseCaseNoParams<bool> {
+  final AuthRepository repository;
+  CheckEmailVerified(this.repository);
+
+  @override
+  Future<Result<bool>> call() => repository.isEmailVerified();
+}
+
+class ResendVerificationEmail extends UseCaseNoParams<void> {
+  final AuthRepository repository;
+  ResendVerificationEmail(this.repository);
+
+  @override
+  Future<Result<void>> call() => repository.resendVerificationEmail();
+}

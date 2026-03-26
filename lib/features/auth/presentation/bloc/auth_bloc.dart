@@ -13,6 +13,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LogoutUser logoutUser;
   final GetCurrentUser getCurrentUser;
   final SendPasswordReset sendPasswordReset;
+  final CheckEmailVerified checkEmailVerified;
+  final ResendVerificationEmail resendVerificationEmail;
 
   AuthBloc({
     required this.loginUser,
@@ -21,6 +23,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.logoutUser,
     required this.getCurrentUser,
     required this.sendPasswordReset,
+    required this.checkEmailVerified,
+    required this.resendVerificationEmail,
   }) : super(const AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<LoginWithEmailRequested>(_onLoginWithEmail);
@@ -28,59 +32,130 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RegisterRequested>(_onRegister);
     on<LogoutRequested>(_onLogout);
     on<ForgotPasswordRequested>(_onForgotPassword);
+    on<EmailVerificationCheckRequested>(_onEmailVerificationCheck);
+    on<ResendVerificationEmailRequested>(_onResendVerificationEmail);
   }
 
   Future<void> _onAuthCheckRequested(
-      AuthCheckRequested event, Emitter<AuthState> emit) async {
+    AuthCheckRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthLoading());
     final result = await getCurrentUser();
     if (result.isSuccess && result.data != null) {
-      emit(AuthAuthenticated(result.data!));
+      // Check if email is verified
+      final isVerifiedResult = await checkEmailVerified();
+      final isVerified = isVerifiedResult.isSuccess
+          ? isVerifiedResult.data!
+          : false;
+      if (isVerified) {
+        emit(AuthAuthenticated(result.data!));
+      } else {
+        emit(const AuthEmailNotVerified());
+      }
     } else {
       emit(const AuthUnauthenticated());
     }
   }
 
   Future<void> _onLoginWithEmail(
-      LoginWithEmailRequested event, Emitter<AuthState> emit) async {
+    LoginWithEmailRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthLoading());
     final result = await loginUser(
-        LoginParams(email: event.email, password: event.password));
+      LoginParams(email: event.email, password: event.password),
+    );
     if (result.isSuccess) {
-      emit(AuthAuthenticated(result.data!));
+      // Check if email is verified before allowing login
+      final isVerifiedResult = await checkEmailVerified();
+      final isVerified = isVerifiedResult.isSuccess
+          ? isVerifiedResult.data!
+          : false;
+      if (isVerified) {
+        emit(AuthAuthenticated(result.data!));
+      } else {
+        emit(const AuthEmailNotVerified());
+      }
     } else {
       emit(AuthError(result.error!));
     }
   }
 
   Future<void> _onLoginWithGoogle(
-      LoginWithGoogleRequested event, Emitter<AuthState> emit) async {
+    LoginWithGoogleRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthLoading());
     final result = await loginWithGoogle();
     if (result.isSuccess) {
-      emit(AuthAuthenticated(result.data!));
+      // Google users typically have verified emails, but check anyway
+      final isVerifiedResult = await checkEmailVerified();
+      final isVerified = isVerifiedResult.isSuccess
+          ? isVerifiedResult.data!
+          : true; // Google is trusted
+      if (isVerified) {
+        emit(AuthAuthenticated(result.data!));
+      } else {
+        emit(const AuthEmailNotVerified());
+      }
     } else {
       emit(AuthError(result.error!));
     }
   }
 
   Future<void> _onRegister(
-      RegisterRequested event, Emitter<AuthState> emit) async {
+    RegisterRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthLoading());
-    final result = await registerUser(RegisterParams(
-      name: event.name,
-      email: event.email,
-      password: event.password,
-    ));
+    final result = await registerUser(
+      RegisterParams(
+        name: event.name,
+        email: event.email,
+        password: event.password,
+      ),
+    );
     if (result.isSuccess) {
-      emit(AuthAuthenticated(result.data!));
+      emit(const AuthEmailNotVerified()); // changed from AuthAuthenticated
     } else {
       emit(AuthError(result.error!));
     }
   }
 
-  Future<void> _onLogout(
-      LogoutRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onEmailVerificationCheck(
+    EmailVerificationCheckRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    final result = await getCurrentUser();
+    if (result.isSuccess && result.data != null) {
+      // Check if email is verified via Firebase directly
+      final isVerifiedResult = await checkEmailVerified();
+      final isVerified = isVerifiedResult.isSuccess
+          ? isVerifiedResult.data!
+          : false;
+      if (isVerified) {
+        emit(AuthAuthenticated(result.data!));
+      }
+      // If not verified, stay on AuthEmailNotVerified — don't emit anything
+    }
+  }
+
+  Future<void> _onResendVerificationEmail(
+    ResendVerificationEmailRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    final result = await resendVerificationEmail();
+    if (result.isSuccess) {
+      emit(const AuthVerificationEmailSent());
+      // Go back to waiting state
+      emit(const AuthEmailNotVerified());
+    } else {
+      emit(AuthError(result.error!));
+    }
+  }
+
+  Future<void> _onLogout(LogoutRequested event, Emitter<AuthState> emit) async {
     emit(const AuthLoading());
     final result = await logoutUser();
     if (result.isSuccess) {
@@ -91,10 +166,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onForgotPassword(
-      ForgotPasswordRequested event, Emitter<AuthState> emit) async {
+    ForgotPasswordRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(const AuthLoading());
     final result = await sendPasswordReset(
-        SendPasswordResetParams(email: event.email));
+      SendPasswordResetParams(email: event.email),
+    );
     if (result.isSuccess) {
       emit(const AuthPasswordResetSent());
     } else {

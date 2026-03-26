@@ -9,14 +9,21 @@ import '../../../../core/utils/constants.dart';
 import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<UserModel> loginWithEmail(
-      {required String email, required String password});
-  Future<UserModel> registerWithEmail(
-      {required String name, required String email, required String password});
+  Future<UserModel> loginWithEmail({
+    required String email,
+    required String password,
+  });
+  Future<UserModel> registerWithEmail({
+    required String name,
+    required String email,
+    required String password,
+  });
   Future<UserModel> loginWithGoogle();
   Future<void> logout();
   Future<UserModel?> getCurrentUser();
   Future<void> sendPasswordResetEmail({required String email});
+  Future<bool> isEmailVerified();
+  Future<void> resendVerificationEmail();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -28,16 +35,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required FirebaseAuth firebaseAuth,
     required FirebaseFirestore firestore,
     required GoogleSignIn googleSignIn,
-  })  : _firebaseAuth = firebaseAuth,
-        _firestore = firestore,
-        _googleSignIn = googleSignIn;
+  }) : _firebaseAuth = firebaseAuth,
+       _firestore = firestore,
+       _googleSignIn = googleSignIn;
 
   @override
-  Future<UserModel> loginWithEmail(
-      {required String email, required String password}) async {
+  Future<UserModel> loginWithEmail({
+    required String email,
+    required String password,
+  }) async {
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       final doc = await _firestore
           .collection(AppConstants.usersCollection)
           .doc(credential.user!.uid)
@@ -51,13 +62,19 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> registerWithEmail(
-      {required String name,
-      required String email,
-      required String password}) async {
+  Future<UserModel> registerWithEmail({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
     try {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
+
+      // SEND VERIFICATION EMAIL immediately after account creation
+      await credential.user!.sendEmailVerification();
       final user = UserModel(
         uid: credential.user!.uid,
         name: name,
@@ -76,6 +93,28 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
+  Future<void> reloadUser() async {
+    await _firebaseAuth.currentUser?.reload();
+  }
+
+  @override
+  Future<bool> isEmailVerified() async {
+    await _firebaseAuth.currentUser?.reload();
+    return _firebaseAuth.currentUser?.emailVerified ?? false;
+  }
+
+  @override
+  Future<void> resendVerificationEmail() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+      }
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
   @override
   Future<UserModel> loginWithGoogle() async {
     try {
@@ -88,8 +127,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      final userCredential =
-          await _firebaseAuth.signInWithCredential(credential);
+      final userCredential = await _firebaseAuth.signInWithCredential(
+        credential,
+      );
       final firebaseUser = userCredential.user!;
 
       final doc = await _firestore
@@ -119,10 +159,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> logout() async {
     try {
-      await Future.wait([
-        _firebaseAuth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
+      await Future.wait([_firebaseAuth.signOut(), _googleSignIn.signOut()]);
     } catch (e) {
       throw ServerException(e.toString());
     }

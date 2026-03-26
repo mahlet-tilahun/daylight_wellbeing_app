@@ -39,3 +39,13 @@ class AuthError extends AuthState {
 class AuthPasswordResetSent extends AuthState {
   const AuthPasswordResetSent();
 }
+
+/// Emitted after registration — user needs to verify email before proceeding
+class AuthEmailNotVerified extends AuthState {
+  const AuthEmailNotVerified();
+}
+
+/// Emitted when resend was successful
+class AuthVerificationEmailSent extends AuthState {
+  const AuthVerificationEmailSent();
+}

@@ -63,6 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '669897121997',
     projectId: 'daylight-wellbeing-app',
     storageBucket: 'daylight-wellbeing-app.firebasestorage.app',
+    androidClientId: '669897121997-8qg5d59iemktar64fj1fj02linlla9of.apps.googleusercontent.com',
+    iosClientId: '669897121997-krmp6nsndhi1lmitevhmodhte0jf3a7k.apps.googleusercontent.com',
     iosBundleId: 'com.example.daylightWellbeingApp',
   );
 
@@ -72,6 +74,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '669897121997',
     projectId: 'daylight-wellbeing-app',
     storageBucket: 'daylight-wellbeing-app.firebasestorage.app',
+    androidClientId: '669897121997-8qg5d59iemktar64fj1fj02linlla9of.apps.googleusercontent.com',
+    iosClientId: '669897121997-krmp6nsndhi1lmitevhmodhte0jf3a7k.apps.googleusercontent.com',
     iosBundleId: 'com.example.daylightWellbeingApp',
   );
 
@@ -83,4 +87,5 @@ class DefaultFirebaseOptions {
     authDomain: 'daylight-wellbeing-app.firebaseapp.com',
     storageBucket: 'daylight-wellbeing-app.firebasestorage.app',
   );
+
 }
