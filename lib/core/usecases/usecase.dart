@@ -16,13 +16,13 @@ class Result<T> {
 }
 
 /// Base class for use cases with parameters
-abstract class UseCase<Type, Params> {
-  Future<Result<Type>> call(Params params);
+abstract class UseCase<T, Params> {
+  Future<Result<T>> call(Params params);
 }
 
 /// Base class for use cases with no parameters
-abstract class UseCaseNoParams<Type> {
-  Future<Result<Type>> call();
+abstract class UseCaseNoParams<T> {
+  Future<Result<T>> call();
 }
 
 /// Used when a use case needs no parameters

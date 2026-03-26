@@ -11,11 +11,15 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Result<UserEntity>> loginWithEmail(
-      {required String email, required String password}) async {
+  Future<Result<UserEntity>> loginWithEmail({
+    required String email,
+    required String password,
+  }) async {
     try {
       final user = await remoteDataSource.loginWithEmail(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       return Result.success(user);
     } on AuthException catch (e) {
       return Result.failure(e.message);
@@ -25,13 +29,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Result<UserEntity>> registerWithEmail(
-      {required String name,
-      required String email,
-      required String password}) async {
+  Future<Result<UserEntity>> registerWithEmail({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
     try {
       final user = await remoteDataSource.registerWithEmail(
-          name: name, email: email, password: password);
+        name: name,
+        email: email,
+        password: password,
+      );
       return Result.success(user);
     } on AuthException catch (e) {
       return Result.failure(e.message);
@@ -79,6 +87,26 @@ class AuthRepositoryImpl implements AuthRepository {
       return const Result.success(null);
     } on AuthException catch (e) {
       return Result.failure(e.message);
+    } on ServerException catch (e) {
+      return Result.failure(e.message);
+    }
+  }
+
+  @override
+  Future<Result<bool>> isEmailVerified() async {
+    try {
+      final verified = await remoteDataSource.isEmailVerified();
+      return Result.success(verified);
+    } catch (e) {
+      return Result.failure(e.toString());
+    }
+  }
+
+  @override
+  Future<Result<void>> resendVerificationEmail() async {
+    try {
+      await remoteDataSource.resendVerificationEmail();
+      return const Result.success(null);
     } on ServerException catch (e) {
       return Result.failure(e.message);
     }

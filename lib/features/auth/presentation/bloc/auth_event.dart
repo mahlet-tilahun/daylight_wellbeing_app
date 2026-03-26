@@ -48,3 +48,11 @@ class ForgotPasswordRequested extends AuthEvent {
   @override
   List<Object> get props => [email];
 }
+
+class EmailVerificationCheckRequested extends AuthEvent {
+  const EmailVerificationCheckRequested();
+}
+
+class ResendVerificationEmailRequested extends AuthEvent {
+  const ResendVerificationEmailRequested();
+}

@@ -20,18 +20,19 @@ abstract class NotesRemoteDataSource {
     required String content,
   });
   Future<void> deleteNote({required String noteId});
-  Future<void> toggleFavorite({required String noteId, required bool isFavorite});
+  Future<void> toggleFavorite({
+    required String noteId,
+    required bool isFavorite,
+  });
 }
 
 class NotesRemoteDataSourceImpl implements NotesRemoteDataSource {
   final FirebaseFirestore _firestore;
   final Uuid _uuid;
 
-  NotesRemoteDataSourceImpl({
-    required FirebaseFirestore firestore,
-    Uuid? uuid,
-  })  : _firestore = firestore,
-        _uuid = uuid ?? const Uuid();
+  NotesRemoteDataSourceImpl({required FirebaseFirestore firestore, Uuid? uuid})
+    : _firestore = firestore,
+      _uuid = uuid ?? const Uuid();
 
   CollectionReference get _notes =>
       _firestore.collection(AppConstants.notesCollection);
@@ -61,14 +62,12 @@ class NotesRemoteDataSourceImpl implements NotesRemoteDataSource {
   @override
   Future<List<NoteModel>> getNotes({required String userId}) async {
     try {
-      final snapshot = await _notes
-          .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
-          .get();
+      final snapshot = await _notes.where('userId', isEqualTo: userId).get();
 
       return snapshot.docs
           .map((doc) => NoteModel.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
       throw ServerException(e.toString());
     }

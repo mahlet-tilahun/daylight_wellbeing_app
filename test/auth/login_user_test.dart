@@ -5,10 +5,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:daylight/core/usecases/usecase.dart';
-import 'package:daylight/features/auth/domain/entities/user_entity.dart';
-import 'package:daylight/features/auth/domain/repositories/auth_repository.dart';
-import 'package:daylight/features/auth/domain/usecases/auth_usecases.dart';
+import 'package:daylight_wellbeing_app/core/usecases/usecase.dart';
+import 'package:daylight_wellbeing_app/features/auth/domain/entities/user_entity.dart';
+import 'package:daylight_wellbeing_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:daylight_wellbeing_app/features/auth/domain/usecases/auth_usecases.dart';
 
 // Create a mock of the repository
 class MockAuthRepository extends Mock implements AuthRepository {}

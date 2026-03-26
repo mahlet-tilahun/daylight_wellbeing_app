@@ -60,36 +60,38 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) async {
-          if (state is AuthAuthenticated) {
+          // Capture context-dependent objects before async gap
+          final scaffoldMessenger = ScaffoldMessenger.of(context);
+          if (state is AuthError) {
+            scaffoldMessenger.showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          } else if (state is AuthVerificationEmailSent) {
+            scaffoldMessenger.showSnackBar(
+              const SnackBar(
+                content: Text('Verification email sent! Check your inbox.'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          } else if (state is AuthAuthenticated) {
             // Email verified — show success message then go home
             _checkTimer?.cancel();
-            ScaffoldMessenger.of(context).showSnackBar(
+            scaffoldMessenger.showSnackBar(
               const SnackBar(
                 content: Text('✓ Email verified successfully!'),
                 backgroundColor: Colors.green,
                 duration: Duration(seconds: 2),
               ),
             );
+            // Capture navigator BEFORE async gap
+            final navigator = Navigator.of(context);
             await Future.delayed(const Duration(milliseconds: 700));
             if (!mounted) return;
-            Navigator.of(context).pushReplacement(
+            navigator.pushReplacement(
               MaterialPageRoute(builder: (_) => const MainShell()),
-            );
-          }
-          if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-          if (state is AuthVerificationEmailSent) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Verification email sent! Check your inbox.'),
-                backgroundColor: Colors.green,
-              ),
             );
           }
         },

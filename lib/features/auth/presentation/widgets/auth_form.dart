@@ -3,7 +3,6 @@
 // Keeping these separate keeps screen files clean.
 
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_theme.dart';
 
 /// A styled full-width button used throughout the app
 class CustomButton extends StatelessWidget {
@@ -105,7 +104,14 @@ class GoogleSignInButton extends StatelessWidget {
                 width: 18,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : const Text('G', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
+            : const Text(
+                'G',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
         label: const Text(
           'Continue with Google',
           style: TextStyle(color: Colors.white),

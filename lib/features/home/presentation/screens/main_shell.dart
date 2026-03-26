@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/navigation/bottom_nav_cubit.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../helpline/presentation/screens/helpline_screen.dart';
 import '../../../mood/presentation/screens/mood_list_screen.dart';
 import '../../../journal/presentation/screens/notes_list_screen.dart';
@@ -29,14 +28,10 @@ class MainShell extends StatelessWidget {
       builder: (context, currentIndex) {
         return Scaffold(
           // IndexedStack keeps all screens alive (preserves scroll position etc.)
-          body: IndexedStack(
-            index: currentIndex,
-            children: _screens,
-          ),
+          body: IndexedStack(index: currentIndex, children: _screens),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: currentIndex,
-            onTap: (index) =>
-                context.read<BottomNavCubit>().changeTab(index),
+            onTap: (index) => context.read<BottomNavCubit>().changeTab(index),
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home_outlined),

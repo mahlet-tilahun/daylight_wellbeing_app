@@ -11,7 +11,6 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../auth/presentation/widgets/auth_form.dart';
 import '../bloc/mood_bloc.dart';
-import '../../../auth/presentation/widgets/auth_form.dart';
 
 class MoodTrackerScreen extends StatefulWidget {
   const MoodTrackerScreen({super.key});
@@ -30,9 +29,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
   void _loadMoods() {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
-      context
-          .read<MoodBloc>()
-          .add(LoadMoodsRequested(authState.user.uid));
+      context.read<MoodBloc>().add(LoadMoodsRequested(authState.user.uid));
     }
   }
 
@@ -40,11 +37,8 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       context.read<MoodBloc>().add(
-            AddMoodRequested(
-              userId: authState.user.uid,
-              moodType: moodType,
-            ),
-          );
+        AddMoodRequested(userId: authState.user.uid, moodType: moodType),
+      );
       showSuccessSnackbar(context, '$moodType mood logged!');
     }
   }
@@ -53,8 +47,8 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       context.read<MoodBloc>().add(
-            DeleteMoodRequested(moodId: moodId, userId: authState.user.uid),
-          );
+        DeleteMoodRequested(moodId: moodId, userId: authState.user.uid),
+      );
     }
   }
 
@@ -62,12 +56,12 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       context.read<MoodBloc>().add(
-            UpdateMoodNoteRequested(
-              moodId: moodId,
-              userId: authState.user.uid,
-              note: note,
-            ),
-          );
+        UpdateMoodNoteRequested(
+          moodId: moodId,
+          userId: authState.user.uid,
+          note: note,
+        ),
+      );
     }
   }
 
@@ -77,8 +71,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.navyCard,
-        title: const Text('Edit Note',
-            style: TextStyle(color: Colors.white)),
+        title: const Text('Edit Note', style: TextStyle(color: Colors.white)),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -92,8 +85,10 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppTheme.textGrey)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppTheme.textGrey),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -101,24 +96,23 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
               Navigator.pop(ctx);
               showSuccessSnackbar(context, 'Note updated!');
             },
-            child: const Text('Save',
-                style: TextStyle(color: AppTheme.accentBlue)),
+            child: const Text(
+              'Save',
+              style: TextStyle(color: AppTheme.accentBlue),
+            ),
           ),
         ],
       ),
     );
   }
 
-
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mood Tracker'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.calendar_today),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.calendar_today), onPressed: () {}),
         ],
       ),
       body: BlocConsumer<MoodBloc, MoodState>(
@@ -140,18 +134,18 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                 // Mood history chart
                 if (state is MoodLoading)
                   const Center(child: CircularProgressIndicator())
-                else if (state is MoodLoaded)
-                  ...[
-                    _buildMoodChart(state.moods),
-                    const SizedBox(height: 24),
-                    _buildWeekHighlights(state.moods),
-                    const SizedBox(height: 24),
-                    _buildMoodHistory(state.moods),
-                  ]
-                else
+                else if (state is MoodLoaded) ...[
+                  _buildMoodChart(state.moods),
+                  const SizedBox(height: 24),
+                  _buildWeekHighlights(state.moods),
+                  const SizedBox(height: 24),
+                  _buildMoodHistory(state.moods),
+                ] else
                   const Center(
-                    child: Text('Log your first mood above!',
-                        style: TextStyle(color: Colors.grey)),
+                    child: Text(
+                      'Log your first mood above!',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
               ],
             ),
@@ -171,9 +165,10 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
             const Text(
               'Check in With Yourself',
               style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -192,7 +187,9 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                       Text(
                         AppConstants.moodTypes[index],
                         style: const TextStyle(
-                            color: Colors.white70, fontSize: 12),
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -216,9 +213,13 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('This Week',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
+            const Text(
+              'This Week',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -226,12 +227,18 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: moodLevels
-                      .map((m) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Text(m,
-                                style: const TextStyle(
-                                    color: Colors.white70, fontSize: 11)),
-                          ))
+                      .map(
+                        (m) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            m,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                      )
                       .toList(),
                 ),
                 const SizedBox(width: 12),
@@ -239,9 +246,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                 Expanded(
                   child: SizedBox(
                     height: 120,
-                    child: CustomPaint(
-                      painter: _MoodChartPainter(moods),
-                    ),
+                    child: CustomPaint(painter: _MoodChartPainter(moods)),
                   ),
                 ),
               ],
@@ -253,9 +258,15 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: days
-                    .map((d) => Text(d,
+                    .map(
+                      (d) => Text(
+                        d,
                         style: const TextStyle(
-                            color: Colors.white70, fontSize: 11)))
+                          color: Colors.white70,
+                          fontSize: 11,
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
             ),
@@ -275,9 +286,13 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Highlights from this week',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
+            const Text(
+              'Highlights from this week',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -285,7 +300,10 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                 const SizedBox(width: 8),
                 Text(
                   'You felt $mostFrequent most often this week',
-                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13),
+                  style: TextStyle(
+                    color: AppTheme.textSecondary(context),
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
@@ -301,11 +319,14 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Recent Moods',
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16)),
+        const Text(
+          'Recent Moods',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
         const SizedBox(height: 8),
         ...moods.take(10).map((mood) {
           final idx = AppConstants.moodTypes.indexOf(mood.moodType);
@@ -314,15 +335,19 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
             margin: const EdgeInsets.only(bottom: 8),
             child: ListTile(
               leading: Text(emoji, style: const TextStyle(fontSize: 28)),
-              title: Text(mood.moodType,
-                  style: TextStyle(color: AppTheme.textPrimary(context))),
+              title: Text(
+                mood.moodType,
+                style: TextStyle(color: AppTheme.textPrimary(context)),
+              ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     DateFormat('EEE, MMM d • h:mm a').format(mood.createdAt),
                     style: TextStyle(
-                        color: AppTheme.textSecondary(context), fontSize: 12),
+                      color: AppTheme.textSecondary(context),
+                      fontSize: 12,
+                    ),
                   ),
                   // Show note if present
                   if (mood.note.isNotEmpty)
@@ -331,9 +356,10 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                       child: Text(
                         mood.note,
                         style: TextStyle(
-                            color: AppTheme.textSecondary(context),
-                            fontSize: 12,
-                            fontStyle: FontStyle.italic),
+                          color: AppTheme.textSecondary(context),
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ),
                 ],
@@ -344,14 +370,21 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                 children: [
                   // Edit note button (UPDATE operation)
                   IconButton(
-                    icon: Icon(Icons.edit_note,
-                        color: AppTheme.accentBlue, size: 20),
+                    icon: const Icon(
+                      Icons.edit_note,
+                      color: AppTheme.accentBlue,
+                      size: 20,
+                    ),
                     tooltip: 'Edit note',
-                    onPressed: () => _showEditNoteDialog(mood.moodId, mood.note),
+                    onPressed: () =>
+                        _showEditNoteDialog(mood.moodId, mood.note),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete_outline,
-                        color: Colors.redAccent, size: 20),
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.redAccent,
+                      size: 20,
+                    ),
                     onPressed: () => _deleteMood(mood.moodId),
                   ),
                 ],
@@ -401,8 +434,8 @@ class _MoodChartPainter extends CustomPainter {
     final path = Path();
     for (int i = 0; i < recent.length; i++) {
       final x = (i / (recent.length - 1)) * size.width;
-      final y = size.height -
-          (moodValues[recent[i].moodType] ?? 0.5) * size.height;
+      final y =
+          size.height - (moodValues[recent[i].moodType] ?? 0.5) * size.height;
       if (i == 0) {
         path.moveTo(x, y);
       } else {

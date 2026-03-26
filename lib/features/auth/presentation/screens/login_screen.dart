@@ -34,11 +34,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onLoginPressed() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-            LoginWithEmailRequested(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+        LoginWithEmailRequested(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 
@@ -83,11 +83,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       validator: Validators.validatePassword,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _showPassword ? Icons.visibility_off : Icons.visibility,
+                          _showPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                           color: Colors.grey,
                         ),
-                        onPressed: () =>
-                            setState(() => _showPassword = !_showPassword), // local UI state only — not business logic
+                        onPressed: () => setState(
+                          () => _showPassword = !_showPassword,
+                        ), // local UI state only — not business logic
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -122,7 +125,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         Expanded(child: Divider(color: Colors.grey)),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: Text('or', style: TextStyle(color: Colors.grey)),
+                          child: Text(
+                            'or',
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         ),
                         Expanded(child: Divider(color: Colors.grey)),
                       ],
@@ -184,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFFFD700).withOpacity(0.3),
+                color: const Color(0xFFFFD700).withValues(alpha: 0.3),
                 blurRadius: 20,
                 spreadRadius: 5,
               ),

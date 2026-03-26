@@ -10,21 +10,21 @@ class AppTheme {
   AppTheme._();
 
   // ── Brand colours ────────────────────────────────────────
-  static const Color navyDark    = Color(0xFF0D0D2B);
-  static const Color navyMid     = Color(0xFF1A1A3E);
-  static const Color navyCard    = Color(0xFF1E2040);
-  static const Color accentGreen  = Color(0xFF9DFF5B);
+  static const Color navyDark = Color(0xFF0D0D2B);
+  static const Color navyMid = Color(0xFF1A1A3E);
+  static const Color navyCard = Color(0xFF1E2040);
+  static const Color accentGreen = Color(0xFF9DFF5B);
   static const Color accentYellow = Color(0xFFFFD700);
-  static const Color accentBlue   = Color(0xFF4FC3F7);
-  static const Color textWhite    = Color(0xFFFFFFFF);
-  static const Color textGrey     = Color(0xFFB0B0C0);
+  static const Color accentBlue = Color(0xFF4FC3F7);
+  static const Color textWhite = Color(0xFFFFFFFF);
+  static const Color textGrey = Color(0xFFB0B0C0);
 
   // Light mode colours
-  static const Color lightBg       = Color(0xFFF4F6FB);
-  static const Color lightCard     = Color(0xFFFFFFFF);
-  static const Color lightPrimary  = Color(0xFF3D3DBF);
-  static const Color lightTextPri  = Color(0xFF0D0D2B);
-  static const Color lightTextSec  = Color(0xFF6B7280);
+  static const Color lightBg = Color(0xFFF4F6FB);
+  static const Color lightCard = Color(0xFFFFFFFF);
+  static const Color lightPrimary = Color(0xFF3D3DBF);
+  static const Color lightTextPri = Color(0xFF0D0D2B);
+  static const Color lightTextSec = Color(0xFF6B7280);
 
   // ── Adaptive helpers ─────────────────────────────────────
   // Call these in widgets instead of hardcoding Colors.white.
@@ -34,7 +34,7 @@ class AppTheme {
       Theme.of(context).colorScheme.onSurface;
 
   static Color textSecondary(BuildContext context) =>
-      Theme.of(context).colorScheme.onSurface.withOpacity(0.6);
+      Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
 
   static Color cardBg(BuildContext context) =>
       Theme.of(context).colorScheme.surface;
@@ -52,11 +52,9 @@ class AppTheme {
         primary: accentBlue,
         secondary: accentGreen,
         surface: navyCard,
-        background: navyDark,
         onPrimary: navyDark,
         onSecondary: navyDark,
         onSurface: textWhite,
-        onBackground: textWhite,
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: navyDark,
@@ -75,9 +73,11 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF3D3DBF),
+          backgroundColor: const Color(0xFF3D3DBF),
           foregroundColor: textWhite,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           padding: const EdgeInsets.symmetric(vertical: 14),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
@@ -115,11 +115,23 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
       ),
       textTheme: const TextTheme(
-        headlineLarge: TextStyle(color: textWhite, fontSize: 28, fontWeight: FontWeight.bold),
-        headlineMedium: TextStyle(color: textWhite, fontSize: 22, fontWeight: FontWeight.bold),
+        headlineLarge: TextStyle(
+          color: textWhite,
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+        ),
+        headlineMedium: TextStyle(
+          color: textWhite,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
         bodyLarge: TextStyle(color: textWhite, fontSize: 16),
         bodyMedium: TextStyle(color: textGrey, fontSize: 14),
-        labelLarge: TextStyle(color: textWhite, fontSize: 16, fontWeight: FontWeight.w600),
+        labelLarge: TextStyle(
+          color: textWhite,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       dividerColor: const Color(0xFF2A2A5A),
     );
@@ -135,11 +147,9 @@ class AppTheme {
         primary: lightPrimary,
         secondary: Color(0xFF2A9D8F),
         surface: lightCard,
-        background: lightBg,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
-        onSurface: lightTextPri,      // ← used by textPrimary()
-        onBackground: lightTextPri,
+        onSurface: lightTextPri, // ← used by textPrimary()
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: lightCard,
@@ -161,7 +171,9 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: lightPrimary,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           padding: const EdgeInsets.symmetric(vertical: 14),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
@@ -200,23 +212,35 @@ class AppTheme {
         elevation: 8,
       ),
       textTheme: const TextTheme(
-        headlineLarge: TextStyle(color: lightTextPri, fontSize: 28, fontWeight: FontWeight.bold),
-        headlineMedium: TextStyle(color: lightTextPri, fontSize: 22, fontWeight: FontWeight.bold),
+        headlineLarge: TextStyle(
+          color: lightTextPri,
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+        ),
+        headlineMedium: TextStyle(
+          color: lightTextPri,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
         bodyLarge: TextStyle(color: lightTextPri, fontSize: 16),
         bodyMedium: TextStyle(color: lightTextSec, fontSize: 14),
-        labelLarge: TextStyle(color: lightTextPri, fontSize: 16, fontWeight: FontWeight.w600),
+        labelLarge: TextStyle(
+          color: lightTextPri,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       dividerColor: const Color(0xFFE5E7EB),
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith(
-          (states) => states.contains(MaterialState.selected)
+        thumbColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
               ? lightPrimary
               : Colors.grey,
         ),
-        trackColor: MaterialStateProperty.resolveWith(
-          (states) => states.contains(MaterialState.selected)
-              ? lightPrimary.withOpacity(0.4)
-              : Colors.grey.withOpacity(0.3),
+        trackColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? lightPrimary.withValues(alpha: 0.4)
+              : Colors.grey.withValues(alpha: 0.3),
         ),
       ),
     );

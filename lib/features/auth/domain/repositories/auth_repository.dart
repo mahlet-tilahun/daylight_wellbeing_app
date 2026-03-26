@@ -23,4 +23,7 @@ abstract class AuthRepository {
 
   /// Sends a password reset email to the given address
   Future<Result<void>> sendPasswordResetEmail({required String email});
+
+  Future<Result<bool>> isEmailVerified();
+  Future<Result<void>> resendVerificationEmail();
 }
