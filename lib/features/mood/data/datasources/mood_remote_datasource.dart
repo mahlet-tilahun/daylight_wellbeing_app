@@ -23,8 +23,8 @@ class MoodRemoteDataSourceImpl implements MoodRemoteDataSource {
   final Uuid _uuid;
 
   MoodRemoteDataSourceImpl({required FirebaseFirestore firestore, Uuid? uuid})
-      : _firestore = firestore,
-        _uuid = uuid ?? const Uuid();
+    : _firestore = firestore,
+      _uuid = uuid ?? const Uuid();
 
   @override
   Future<MoodModel> addMood({
@@ -56,11 +56,9 @@ class MoodRemoteDataSourceImpl implements MoodRemoteDataSource {
       final snapshot = await _firestore
           .collection(AppConstants.moodsCollection)
           .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
           .get();
-      return snapshot.docs
-          .map((doc) => MoodModel.fromMap(doc.data()))
-          .toList();
+      return snapshot.docs.map((doc) => MoodModel.fromMap(doc.data())).toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -79,8 +77,10 @@ class MoodRemoteDataSourceImpl implements MoodRemoteDataSource {
   }
 
   @override
-  Future<void> updateMoodNote(
-      {required String moodId, required String note}) async {
+  Future<void> updateMoodNote({
+    required String moodId,
+    required String note,
+  }) async {
     try {
       await _firestore
           .collection(AppConstants.moodsCollection)
