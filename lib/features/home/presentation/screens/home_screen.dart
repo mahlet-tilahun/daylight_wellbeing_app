@@ -58,6 +58,23 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Auto-play sleeping sound if soundEnabled is true
+    _autoPlaySoundIfEnabled();
+  }
+
+  Future<void> _autoPlaySoundIfEnabled() async {
+    final settingsState = context.read<SettingsCubit>().state;
+    if (settingsState.soundEnabled && _playingSound == null) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) {
+        await _toggleSound('Sleeping', _sounds[0]['asset']!);
+      }
+    }
+  }
+
+  @override
   void dispose() {
     // Always release the audio player when the screen is removed
     _audioPlayer.dispose();
@@ -67,19 +84,21 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Toggle a sound on or off.
   /// If a different sound is already playing, stop it first, then start the new one.
   Future<void> _toggleSound(String name, String assetPath) async {
-    if (_playingSound == name) {
-      // Same sound tapped — stop it
-      await _audioPlayer.stop();
-      setState(() => _playingSound = null);
-    } else {
-      // Different sound tapped — stop current, load and loop new one
-      await _audioPlayer.stop();
-      await _audioPlayer.setAsset(assetPath);
-      await _audioPlayer.setLoopMode(
-        LoopMode.one,
-      ); // loop until manually stopped
-      await _audioPlayer.play();
-      setState(() => _playingSound = name);
+    try {
+      if (_playingSound == name) {
+        // Same sound tapped — stop it
+        await _audioPlayer.stop();
+        setState(() => _playingSound = null);
+      } else {
+        // Different sound tapped — stop current, load and loop new one
+        await _audioPlayer.stop();
+        await _audioPlayer.setAsset(assetPath);
+        await _audioPlayer.setLoopMode(LoopMode.one);
+        await _audioPlayer.play();
+        setState(() => _playingSound = name);
+      }
+    } catch (e) {
+      debugPrint('Error playing sound: $e');
     }
   }
 
@@ -105,37 +124,41 @@ class _HomeScreenState extends State<HomeScreen> {
           final authName = authState is AuthAuthenticated
               ? authState.user.name
               : 'Friend';
-          // Prefer saved display name from settings, fall back to auth name
-          final settingsState = context.read<SettingsCubit>().state;
-          final userName = settingsState.displayName.isNotEmpty
-              ? settingsState.displayName
-              : authName;
-          return SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTopBar(userName, pri, sec),
-                  const SizedBox(height: 20),
-                  Text(
-                    'How are you feeling today?',
-                    style: TextStyle(
-                      color: pri,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+          // Wrap with SettingsCubit BlocBuilder to listen for display name changes
+          return BlocBuilder<SettingsCubit, SettingsState>(
+            builder: (context, settingsState) {
+              final userName = settingsState.displayName.isNotEmpty
+                  ? settingsState.displayName
+                  : authName;
+              return SafeArea(
+                bottom: true,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTopBar(userName, pri, sec),
+                      const SizedBox(height: 20),
+                      Text(
+                        'How are you feeling today?',
+                        style: TextStyle(
+                          color: pri,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      _buildMoodCheckIn(pri, sec),
+                      const SizedBox(height: 20),
+                      _buildWellbeingTips(pri, sec, dark),
+                      const SizedBox(height: 20),
+                      _buildRelaxingSounds(pri, sec, dark),
+                      const SizedBox(height: 20),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  _buildMoodCheckIn(pri, sec),
-                  const SizedBox(height: 20),
-                  _buildWellbeingTips(pri, sec, dark),
-                  const SizedBox(height: 20),
-                  _buildRelaxingSounds(pri, sec, dark),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -154,7 +177,11 @@ class _HomeScreenState extends State<HomeScreen> {
               colors: [Color(0xFFFFD700), Color(0xFFFF8C00)],
             ),
           ),
-          child: const Icon(Icons.wb_sunny, color: Colors.white, size: 22),
+          child: Icon(
+            Icons.wb_sunny,
+            color: AppTheme.textPrimary(context),
+            size: 22,
+          ),
         ),
         const SizedBox(width: 10),
         Text(
@@ -168,9 +195,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const Spacer(),
-        Text(
-          'Good Morning $userName',
-          style: TextStyle(color: sec, fontSize: 12),
+        Flexible(
+          child: Text(
+            'Hi, $userName!',
+            style: TextStyle(color: sec, fontSize: 12),
+            maxLines: 2,
+            softWrap: true,
+          ),
         ),
         IconButton(
           icon: Icon(Icons.settings_outlined, color: sec, size: 22),
@@ -352,9 +383,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 16,
                             height: 16,
                             margin: const EdgeInsets.symmetric(horizontal: 2),
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.white,
+                              color: AppTheme.textPrimary(context),
                             ),
                           ),
                         ),

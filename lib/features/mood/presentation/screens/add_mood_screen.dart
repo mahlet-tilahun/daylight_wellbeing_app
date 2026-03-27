@@ -21,48 +21,51 @@ class AddMoodScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Log Mood')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('How are you feeling right now?',
-                style: TextStyle(
-                    color: pri, fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 32),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Text('Pick your mood',
-                        style: TextStyle(
-                            color: pri, fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: List.generate(
-                        AppConstants.moodTypes.length,
-                        (i) => GestureDetector(
-                          onTap: () => _logMood(
-                              context, AppConstants.moodTypes[i]),
-                          child: Column(
-                            children: [
-                              Text(AppConstants.moodEmojis[i],
-                                  style: const TextStyle(fontSize: 40)),
-                              const SizedBox(height: 8),
-                              Text(AppConstants.moodTypes[i],
-                                  style: TextStyle(color: sec, fontSize: 13)),
-                            ],
+      body: SafeArea(
+        bottom: true,
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('How are you feeling right now?',
+                  style: TextStyle(
+                      color: pri, fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 32),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Text('Pick your mood',
+                          style: TextStyle(
+                              color: pri, fontWeight: FontWeight.bold, fontSize: 16)),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: List.generate(
+                          AppConstants.moodTypes.length,
+                          (i) => GestureDetector(
+                            onTap: () => _logMood(
+                                context, AppConstants.moodTypes[i]),
+                            child: Column(
+                              children: [
+                                Text(AppConstants.moodEmojis[i],
+                                    style: const TextStyle(fontSize: 40)),
+                                const SizedBox(height: 8),
+                                Text(AppConstants.moodTypes[i],
+                                    style: TextStyle(color: sec, fontSize: 13)),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

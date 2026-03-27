@@ -67,19 +67,21 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
   void _showEditNoteDialog(String moodId, String currentNote) {
     final controller = TextEditingController(text: currentNote);
+    final pri = AppTheme.textPrimary(context);
+    final sec = AppTheme.textSecondary(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.navyCard,
-        title: const Text('Edit Note', style: TextStyle(color: Colors.white)),
+        backgroundColor: AppTheme.cardBg(context),
+        title: Text('Edit Note', style: TextStyle(color: pri)),
         content: TextField(
           controller: controller,
           autofocus: true,
           maxLines: 3,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
+          style: TextStyle(color: pri),
+          decoration: InputDecoration(
             hintText: 'Add a note to this mood...',
-            hintStyle: TextStyle(color: AppTheme.textGrey),
+            hintStyle: TextStyle(color: sec),
           ),
         ),
         actions: [
@@ -122,32 +124,35 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
           }
         },
         builder: (context, state) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Check in section
-                _buildCheckIn(),
-                const SizedBox(height: 24),
+          return SafeArea(
+            bottom: true,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Check in section
+                  _buildCheckIn(),
+                  const SizedBox(height: 24),
 
-                // Mood history chart
-                if (state is MoodLoading)
-                  const Center(child: CircularProgressIndicator())
-                else if (state is MoodLoaded) ...[
-                  _buildMoodChart(state.moods),
-                  const SizedBox(height: 24),
-                  _buildWeekHighlights(state.moods),
-                  const SizedBox(height: 24),
-                  _buildMoodHistory(state.moods),
-                ] else
-                  const Center(
-                    child: Text(
-                      'Log your first mood above!',
-                      style: TextStyle(color: Colors.grey),
+                  // Mood history chart
+                  if (state is MoodLoading)
+                    const Center(child: CircularProgressIndicator())
+                  else if (state is MoodLoaded) ...[
+                    _buildMoodChart(state.moods),
+                    const SizedBox(height: 24),
+                    _buildWeekHighlights(state.moods),
+                    const SizedBox(height: 24),
+                    _buildMoodHistory(state.moods),
+                  ] else
+                    Center(
+                      child: Text(
+                        'Log your first mood above!',
+                        style: TextStyle(color: AppTheme.textSecondary(context)),
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -186,8 +191,8 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                       const SizedBox(height: 4),
                       Text(
                         AppConstants.moodTypes[index],
-                        style: const TextStyle(
-                          color: Colors.white70,
+                        style: TextStyle(
+                          color: AppTheme.textSecondary(context),
                           fontSize: 12,
                         ),
                       ),
@@ -213,10 +218,10 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'This Week',
               style: TextStyle(
-                color: Colors.white,
+                color: AppTheme.textPrimary(context),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -286,10 +291,10 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Highlights from this week',
               style: TextStyle(
-                color: Colors.white,
+                color: AppTheme.textPrimary(context),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -319,10 +324,10 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Recent Moods',
           style: TextStyle(
-            color: Colors.white,
+            color: AppTheme.textPrimary(context),
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
