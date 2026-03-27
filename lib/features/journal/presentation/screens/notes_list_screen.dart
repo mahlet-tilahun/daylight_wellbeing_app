@@ -89,88 +89,91 @@ class _NotesListScreenState extends State<NotesListScreen>
         backgroundColor: AppTheme.accentGreen,
         child: const Icon(Icons.add, color: AppTheme.navyDark),
       ),
-      body: BlocConsumer<NotesBloc, NotesState>(
-        listener: (context, state) {
-          if (state is NotesError) {
-            showErrorSnackbar(context, state.message);
-          }
-        },
-        builder: (context, state) {
-          if (state is NotesLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: SafeArea(
+        bottom: true,
+        child: BlocConsumer<NotesBloc, NotesState>(
+          listener: (context, state) {
+            if (state is NotesError) {
+              showErrorSnackbar(context, state.message);
+            }
+          },
+          builder: (context, state) {
+            if (state is NotesLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (state is NotesLoaded) {
-            // Filter by search query
-            final filtered = state.notes
-                .where((n) =>
-                    n.title
-                        .toLowerCase()
-                        .contains(_searchQuery.toLowerCase()) ||
-                    n.content
-                        .toLowerCase()
-                        .contains(_searchQuery.toLowerCase()))
-                .toList();
+            if (state is NotesLoaded) {
+              // Filter by search query
+              final filtered = state.notes
+                  .where((n) =>
+                      n.title
+                          .toLowerCase()
+                          .contains(_searchQuery.toLowerCase()) ||
+                      n.content
+                          .toLowerCase()
+                          .contains(_searchQuery.toLowerCase()))
+                  .toList();
 
-            final favorites =
-                filtered.where((n) => n.isFavorite).toList();
+              final favorites =
+                  filtered.where((n) => n.isFavorite).toList();
 
-            return Column(
-              children: [
-                // Search bar
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (val) =>
-                        setState(() => _searchQuery = val), // local search filter — no Firebase call
-                    style: TextStyle(color: AppTheme.textPrimary(context)),
-                    decoration: InputDecoration(
-                      hintText: 'search notes',
-                      prefixIcon: const Icon(Icons.search,
-                          color: AppTheme.textGrey),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear,
-                                  color: AppTheme.textGrey),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() => _searchQuery = ''); // local search filter — no Firebase call
-                              },
-                            )
-                          : null,
+              return Column(
+                children: [
+                  // Search bar
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (val) =>
+                          setState(() => _searchQuery = val),
+                      style: TextStyle(color: AppTheme.textPrimary(context)),
+                      decoration: InputDecoration(
+                        hintText: 'search notes',
+                        prefixIcon: const Icon(Icons.search,
+                            color: AppTheme.textGrey),
+                        suffixIcon: _searchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear,
+                                    color: AppTheme.textGrey),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  setState(() => _searchQuery = '');
+                                },
+                              )
+                            : null,
+                      ),
                     ),
                   ),
-                ),
-                // Tabs content
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildNotesList(filtered),
-                      _buildNotesList(favorites),
-                    ],
+                  // Tabs content
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildNotesList(filtered),
+                        _buildNotesList(favorites),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          }
+                ],
+              );
+            }
 
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('No notes yet',
-                    style: TextStyle(color: Colors.grey, fontSize: 16)),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: _openAddNote,
-                  child: const Text('Add your first note'),
-                ),
-              ],
-            ),
-          );
-        },
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('No notes yet',
+                      style: TextStyle(color: Colors.grey, fontSize: 16)),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: _openAddNote,
+                    child: const Text('Add your first note'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

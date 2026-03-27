@@ -76,72 +76,76 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final pri = AppTheme.textPrimary(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Note' : 'New Note'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              // Title field
-              TextFormField(
-                controller: _titleController,
-                validator: Validators.validateNoteTitle,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-                decoration: const InputDecoration(
-                  hintText: 'Note Title',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(
-                      color: AppTheme.textGrey,
+      body: SafeArea(
+        bottom: true,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                // Title field
+                TextFormField(
+                  controller: _titleController,
+                  validator: Validators.validateNoteTitle,
+                  style: TextStyle(
+                      color: pri,
                       fontSize: 18,
                       fontWeight: FontWeight.bold),
-                ),
-              ),
-              const Divider(color: AppTheme.navyCard),
-              const SizedBox(height: 8),
-
-              // Content area — expands to fill available space
-              Expanded(
-                child: TextFormField(
-                  controller: _contentController,
-                  maxLines: null,
-                  expands: true,
-                  textAlignVertical: TextAlignVertical.top,
-                  style: TextStyle(color: AppTheme.textPrimary(context), fontSize: 15),
-                  decoration: const InputDecoration(
-                    hintText: 'Start Typing....',
+                  decoration: InputDecoration(
+                    hintText: 'Note Title',
                     border: InputBorder.none,
-                    hintStyle:
-                        TextStyle(color: AppTheme.textGrey, fontSize: 15),
+                    hintStyle: TextStyle(
+                        color: AppTheme.textSecondary(context),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
-              ),
+                Divider(color: AppTheme.cardBg(context)),
+                const SizedBox(height: 8),
 
-              // Save button at the bottom
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: SizedBox(
-                  width: 120,
-                  child: ElevatedButton(
-                    onPressed: _onSave,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.accentGreen,
-                      foregroundColor: AppTheme.navyDark,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
+                // Content area — expands to fill available space
+                Expanded(
+                  child: TextFormField(
+                    controller: _contentController,
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical.top,
+                    style: TextStyle(color: pri, fontSize: 15),
+                    decoration: InputDecoration(
+                      hintText: 'Start Typing....',
+                      border: InputBorder.none,
+                      hintStyle:
+                          TextStyle(color: AppTheme.textSecondary(context), fontSize: 15),
                     ),
-                    child: const Text('Save',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
-              ),
-            ],
+
+                // Save button at the bottom
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: SizedBox(
+                    width: 120,
+                    child: ElevatedButton(
+                      onPressed: _onSave,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.accentGreen,
+                        foregroundColor: AppTheme.navyDark,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                      ),
+                      child: const Text('Save',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

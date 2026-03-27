@@ -29,52 +29,55 @@ class _HelplineScreenState extends State<HelplineScreen> {
       appBar: AppBar(title: const Text('Helpline')),
       body: BlocBuilder<HelplineCubit, HelplineState>(
         builder: (context, state) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "If you're struggling, it's okay to ask for help!\nHere are some places you can reach out:",
-                  style: TextStyle(color: sec, fontSize: 14),
-                ),
-                const SizedBox(height: 20),
-                ...state.helplines.map((h) => _HelplineCard(helpline: h)),
-                const SizedBox(height: 20),
-                _ResourceButton(
-                  icon: Icons.location_on_outlined,
-                  label: 'Find local services',
-                  onTap: () => _openMaps(context),
-                ),
-                const SizedBox(height: 10),
-                _ResourceButton(
-                  icon: Icons.info_outline,
-                  label: 'Mental health Resources',
-                  onTap: () => _openResources(context),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => _showCallDialog(context, state.helplines),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.accentGreen,
-                      foregroundColor: AppTheme.navyDark,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+          return SafeArea(
+            bottom: true,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "If you're struggling, it's okay to ask for help!\nHere are some places you can reach out:",
+                    style: TextStyle(color: sec, fontSize: 14),
+                  ),
+                  const SizedBox(height: 20),
+                  ...state.helplines.map((h) => _HelplineCard(helpline: h)),
+                  const SizedBox(height: 20),
+                  _ResourceButton(
+                    icon: Icons.location_on_outlined,
+                    label: 'Find local services',
+                    onTap: () => _openMaps(context),
+                  ),
+                  const SizedBox(height: 10),
+                  _ResourceButton(
+                    icon: Icons.info_outline,
+                    label: 'Mental health Resources',
+                    onTap: () => _openResources(context),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => _showCallDialog(context, state.helplines),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.accentGreen,
+                        foregroundColor: AppTheme.navyDark,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                    ),
-                    child: const Text(
-                      'Call Helpline',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                      child: const Text(
+                        'Call Helpline',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

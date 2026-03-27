@@ -16,25 +16,31 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
-      body: BlocBuilder<SettingsCubit, SettingsState>(
-        builder: (context, settingsState) {
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
+      appBar: AppBar(
+        title: Text(
+          'Settings',
+          style: TextStyle(color: AppTheme.textPrimary(context)),
+        ),
+      ),
+      body: SafeArea(
+        child: BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (context, settingsState) {
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
               // ── Appearance ──────────────────────────────
               const _SectionHeader(title: 'Appearance'),
               Card(
                 child: SwitchListTile(
-                  title: const Text(
+                  title: Text(
                     'Dark Mode',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: AppTheme.textPrimary(context)),
                   ),
                   subtitle: Text(
                     settingsState.isDarkMode
                         ? 'Currently dark'
                         : 'Currently light',
-                    style: const TextStyle(color: AppTheme.textGrey),
+                    style: TextStyle(color: AppTheme.textSecondary(context)),
                   ),
                   value: settingsState.isDarkMode,
                   activeThumbColor: AppTheme.accentGreen,
@@ -60,19 +66,19 @@ class SettingsScreen extends StatelessWidget {
                         Icons.person_outline,
                         color: AppTheme.accentBlue,
                       ),
-                      title: const Text(
+                      title: Text(
                         'Display Name',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: AppTheme.textPrimary(context)),
                       ),
                       subtitle: Text(
                         settingsState.displayName.isEmpty
                             ? 'Not set — tap to change'
                             : settingsState.displayName,
-                        style: const TextStyle(color: AppTheme.textGrey),
+                        style: TextStyle(color: AppTheme.textSecondary(context)),
                       ),
-                      trailing: const Icon(
+                      trailing: Icon(
                         Icons.edit_outlined,
-                        color: AppTheme.textGrey,
+                        color: AppTheme.textSecondary(context),
                         size: 18,
                       ),
                       onTap: () => _showDisplayNameDialog(
@@ -80,18 +86,23 @@ class SettingsScreen extends StatelessWidget {
                         settingsState.displayName,
                       ),
                     ),
-                    const Divider(color: AppTheme.navyMid, height: 1),
+                    Divider(
+                      color: AppTheme.isDark(context)
+                          ? AppTheme.navyMid
+                          : const Color(0xFFE5E7EB),
+                      height: 1,
+                    ),
                     // Preference 3: Relaxing sounds
                     SwitchListTile(
-                      title: const Text(
+                      title: Text(
                         'Relaxing Sounds',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: AppTheme.textPrimary(context)),
                       ),
                       subtitle: Text(
                         settingsState.soundEnabled
                             ? 'Sounds auto-play on Home'
                             : 'Sounds off by default',
-                        style: const TextStyle(color: AppTheme.textGrey),
+                        style: TextStyle(color: AppTheme.textSecondary(context)),
                       ),
                       value: settingsState.soundEnabled,
                       activeThumbColor: AppTheme.accentGreen,
@@ -114,11 +125,11 @@ class SettingsScreen extends StatelessWidget {
                   leading: const Icon(Icons.logout, color: Colors.redAccent),
                   title: const Text(
                     'Sign Out',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.redAccent),
                   ),
-                  subtitle: const Text(
+                  subtitle: Text(
                     'You will be returned to the login screen',
-                    style: TextStyle(color: AppTheme.textGrey, fontSize: 12),
+                    style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 12),
                   ),
                   onTap: () => _showLogoutDialog(context),
                 ),
@@ -127,16 +138,21 @@ class SettingsScreen extends StatelessWidget {
 
               // ── About ─────────────────────────────────────
               const _SectionHeader(title: 'About'),
-              const Card(
+              Card(
                 child: Column(
                   children: [
-                    _InfoTile(
+                    const _InfoTile(
                       icon: Icons.info_outline,
                       label: 'App Version',
                       value: '1.0.0',
                     ),
-                    Divider(color: AppTheme.navyMid, height: 1),
-                    _InfoTile(
+                    Divider(
+                      color: AppTheme.isDark(context) 
+                          ? AppTheme.navyMid 
+                          : const Color(0xFFE5E7EB),
+                      height: 1,
+                    ),
+                    const _InfoTile(
                       icon: Icons.favorite_outline,
                       label: 'Made with',
                       value: 'Flutter & Firebase',
@@ -148,34 +164,37 @@ class SettingsScreen extends StatelessWidget {
           );
         },
       ),
+    ),
     );
   }
 
   void _showDisplayNameDialog(BuildContext context, String current) {
     final controller = TextEditingController(text: current);
+    final pri = AppTheme.textPrimary(context);
+    final sec = AppTheme.textSecondary(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.navyCard,
-        title: const Text(
-          'Display Name',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: 'Enter your name',
-            hintStyle: TextStyle(color: AppTheme.textGrey),
+        backgroundColor: AppTheme.cardBg(context),
+        title: Text('Display Name', style: TextStyle(color: pri)),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: TextField(
+            controller: controller,
+            autofocus: true,
+            style: TextStyle(color: pri),
+            decoration: InputDecoration(
+              hintText: 'Enter your name',
+              hintStyle: TextStyle(color: sec),
+            ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppTheme.textGrey),
+              style: TextStyle(color: AppTheme.textSecondary(context)),
             ),
           ),
           TextButton(
@@ -185,9 +204,13 @@ class SettingsScreen extends StatelessWidget {
               );
               Navigator.pop(ctx);
             },
-            child: const Text(
+            child: Text(
               'Save',
-              style: TextStyle(color: AppTheme.accentBlue),
+              style: TextStyle(
+                color: AppTheme.isDark(context)
+                    ? AppTheme.accentBlue
+                    : const Color(0xFF3D3DBF),
+              ),
             ),
           ),
         ],
@@ -196,26 +219,26 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context) {
+    final pri = AppTheme.textPrimary(context);
+    final sec = AppTheme.textSecondary(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.navyCard,
-        title: const Text('Sign Out', style: TextStyle(color: Colors.white)),
-        content: const Text(
+        backgroundColor: AppTheme.cardBg(context),
+        title: Text('Sign Out', style: TextStyle(color: pri)),
+        content: Text(
           'Are you sure you want to sign out?',
-          style: TextStyle(color: AppTheme.textGrey),
+          style: TextStyle(color: sec),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppTheme.textGrey),
-            ),
+            child: Text('Cancel', style: TextStyle(color: sec)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
+              Navigator.pop(context);
               context.read<AuthBloc>().add(const LogoutRequested());
             },
             child: const Text(
@@ -239,8 +262,8 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
         title.toUpperCase(),
-        style: const TextStyle(
-          color: AppTheme.textGrey,
+        style: TextStyle(
+          color: AppTheme.textSecondary(context),
           fontSize: 12,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.2,
@@ -262,15 +285,16 @@ class _InfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textSec = AppTheme.textSecondary(context);
     return ListTile(
-      leading: Icon(icon, color: AppTheme.textGrey, size: 20),
+      leading: Icon(icon, color: textSec, size: 20),
       title: Text(
         label,
         style: TextStyle(color: AppTheme.textPrimary(context)),
       ),
       trailing: Text(
         value,
-        style: const TextStyle(color: AppTheme.textGrey, fontSize: 13),
+        style: TextStyle(color: textSec, fontSize: 13),
       ),
     );
   }
