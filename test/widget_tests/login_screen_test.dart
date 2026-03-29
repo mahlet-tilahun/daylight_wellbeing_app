@@ -112,7 +112,7 @@ void main() {
       when(() => mockAuthBloc.state).thenReturn(const AuthLoading());
       await tester.pumpWidget(buildLoginScreen());
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNWidgets(2));
     });
   });
 }
