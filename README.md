@@ -130,9 +130,9 @@ Pro tip: Use `--obfuscate --split-debug-info=build/debug-info` for production.
 
 | Team Member       | Role                                              |
 | ----------------- | ------------------------------------------------- |
-| Solace (Person 1) | All UI screens and widgets                        |
-| Mahlet (Person 2) | Domain layer (entities, repos, usecases) + BLoC   |
-| Divine (Person 3) | Firebase setup, Firestore repositories            |
-| Olive (Person 4)  | BLoC integration, CRUD operations, error handling |
-| Agertu (Person 5)   | Tests, documentation, demo preparation            |
+| Solace Aziza Afadhali | All UI screens and widgets                        |
+| Mahlet Assefa Tilahun | Domain layer (entities, repos, usecases) + BLoC   |
+| Divine Okon Itu | Firebase setup, Firestore repositories            |
+| Olive Umurerwa  | BLoC integration, CRUD operations, error handling |
+| Agertu Diriba Aliko   | Tests, documentation, demo preparation            |
 
