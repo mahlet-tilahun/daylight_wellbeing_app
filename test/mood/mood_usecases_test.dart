@@ -4,10 +4,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:daylight/core/usecases/usecase.dart';
-import 'package:daylight/features/mood/domain/entities/mood_entity.dart';
-import 'package:daylight/features/mood/domain/repositories/mood_repository.dart';
-import 'package:daylight/features/mood/domain/usecases/mood_usecases.dart';
+import 'package:daylight_wellbeing_app/core/usecases/usecase.dart';
+import 'package:daylight_wellbeing_app/features/mood/domain/entities/mood_entity.dart';
+import 'package:daylight_wellbeing_app/features/mood/domain/repositories/mood_repository.dart';
+import 'package:daylight_wellbeing_app/features/mood/domain/usecases/mood_usecases.dart';
 
 class MockMoodRepository extends Mock implements MoodRepository {}
 

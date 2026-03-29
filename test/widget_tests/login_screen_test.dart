@@ -7,10 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bloc_test/bloc_test.dart';
 
-import 'package:daylight/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:daylight/features/auth/presentation/bloc/auth_event.dart';
-import 'package:daylight/features/auth/presentation/bloc/auth_state.dart';
-import 'package:daylight/features/auth/presentation/screens/login_screen.dart';
+import 'package:daylight_wellbeing_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:daylight_wellbeing_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:daylight_wellbeing_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:daylight_wellbeing_app/features/auth/presentation/screens/login_screen.dart';
 
 // Mock AuthBloc for testing
 class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
@@ -112,7 +112,7 @@ void main() {
       when(() => mockAuthBloc.state).thenReturn(const AuthLoading());
       await tester.pumpWidget(buildLoginScreen());
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNWidgets(2));
     });
   });
 }

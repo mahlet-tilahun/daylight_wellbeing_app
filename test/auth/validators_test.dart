@@ -2,7 +2,7 @@
 // Unit tests for input validators — no mocking needed.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:daylight/core/utils/validators.dart';
+import 'package:daylight_wellbeing_app/core/utils/validators.dart';
 
 void main() {
   group('Validators.validateEmail', () {
