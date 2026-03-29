@@ -1,3 +1,4 @@
+// lib/features/auth/data/models/user_model.dart
 // Data model that maps between Firestore documents and UserEntity.
 // fromFirestore: converts Firestore data → UserModel
 // toMap: converts UserModel → Map (to save to Firestore)
@@ -18,7 +19,9 @@ class UserModel extends UserEntity {
       uid: map['uid'] as String,
       name: map['name'] as String,
       email: map['email'] as String,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(
+        map['createdAt'] as int,
+      ),
     );
   }
 

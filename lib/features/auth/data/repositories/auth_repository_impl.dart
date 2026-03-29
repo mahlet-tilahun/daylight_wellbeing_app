@@ -1,5 +1,4 @@
-// Implements the abstract AuthRepository from the domain layer.
-// Catches exceptions from datasource and converts to Results.
+// lib/features/auth/data/repositories/auth_repository_impl.dart
 
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/usecases/usecase.dart';
@@ -9,7 +8,6 @@ import '../datasources/auth_remote_datasource.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
-
   AuthRepositoryImpl({required this.remoteDataSource});
 
   @override
@@ -77,6 +75,38 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final user = await remoteDataSource.getCurrentUser();
       return Result.success(user);
+    } on ServerException catch (e) {
+      return Result.failure(e.message);
+    }
+  }
+
+  @override
+  Future<Result<void>> sendPasswordResetEmail({required String email}) async {
+    try {
+      await remoteDataSource.sendPasswordResetEmail(email: email);
+      return const Result.success(null);
+    } on AuthException catch (e) {
+      return Result.failure(e.message);
+    } on ServerException catch (e) {
+      return Result.failure(e.message);
+    }
+  }
+
+  @override
+  Future<Result<bool>> isEmailVerified() async {
+    try {
+      final verified = await remoteDataSource.isEmailVerified();
+      return Result.success(verified);
+    } catch (e) {
+      return Result.failure(e.toString());
+    }
+  }
+
+  @override
+  Future<Result<void>> resendVerificationEmail() async {
+    try {
+      await remoteDataSource.resendVerificationEmail();
+      return const Result.success(null);
     } on ServerException catch (e) {
       return Result.failure(e.message);
     }

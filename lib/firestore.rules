@@ -1,0 +1,60 @@
+// firestore.rules
+// Security rules that restrict data access to the owner only.
+// A user can only read/write their OWN data.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function: checks if the requesting user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function: checks if the requesting user owns the document
+    // by comparing their UID to the userId field in the document
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // ── Users Collection ────────────────────────────────────
+    // Users can only read and write their own user document
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+
+    // ── Moods Collection ────────────────────────────────────
+    // Users can only access moods where userId == their own UID
+    match /moods/{moodId} {
+      allow read, delete: if isAuthenticated()
+        && isOwner(resource.data.userId);
+
+      allow create: if isAuthenticated()
+        && isOwner(request.resource.data.userId);
+
+      // No update rule — moods are immutable (delete and re-create instead)
+    }
+
+    // ── Notes Collection ────────────────────────────────────
+    // Users can read, create, update, and delete their own notes
+    match /notes/{noteId} {
+      allow read, delete: if isAuthenticated()
+        && isOwner(resource.data.userId);
+
+      allow create: if isAuthenticated()
+        && isOwner(request.resource.data.userId);
+
+      allow update: if isAuthenticated()
+        && isOwner(resource.data.userId)
+        // Prevent changing the owner of a note
+        && request.resource.data.userId == resource.data.userId;
+    }
+
+    // ── Helplines Collection ─────────────────────────────────
+    // Helpline data is public (read-only for everyone authenticated)
+    match /helplines/{helplineId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only admins via Firebase console
+    }
+  }
+}

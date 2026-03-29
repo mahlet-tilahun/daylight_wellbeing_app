@@ -15,6 +15,7 @@ class AddMood extends UseCase<MoodEntity, AddMoodParams> {
     return repository.addMood(
       userId: params.userId,
       moodType: params.moodType,
+      note: params.note,
     );
   }
 }
@@ -22,7 +23,12 @@ class AddMood extends UseCase<MoodEntity, AddMoodParams> {
 class AddMoodParams {
   final String userId;
   final String moodType;
-  const AddMoodParams({required this.userId, required this.moodType});
+  final String note;
+  const AddMoodParams({
+    required this.userId,
+    required this.moodType,
+    this.note = '',
+  });
 }
 
 // ── Get Moods ─────────────────────────────────────────────
@@ -55,4 +61,25 @@ class DeleteMood extends UseCase<void, DeleteMoodParams> {
 class DeleteMoodParams {
   final String moodId;
   const DeleteMoodParams({required this.moodId});
+}
+
+// ── Update Mood Note ──────────────────────────────────────
+// Allows user to add or edit a text note on an existing mood entry
+class UpdateMoodNote extends UseCase<void, UpdateMoodNoteParams> {
+  final MoodRepository repository;
+  UpdateMoodNote(this.repository);
+
+  @override
+  Future<Result<void>> call(UpdateMoodNoteParams params) {
+    return repository.updateMoodNote(
+      moodId: params.moodId,
+      note: params.note,
+    );
+  }
+}
+
+class UpdateMoodNoteParams {
+  final String moodId;
+  final String note;
+  const UpdateMoodNoteParams({required this.moodId, required this.note});
 }

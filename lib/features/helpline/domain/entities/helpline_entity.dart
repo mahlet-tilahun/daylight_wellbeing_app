@@ -1,6 +1,6 @@
 // lib/features/helpline/domain/entities/helpline_entity.dart
-
 import 'package:equatable/equatable.dart';
+
 
 class HelplineEntity extends Equatable {
   final String country;

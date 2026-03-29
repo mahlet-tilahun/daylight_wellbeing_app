@@ -1,5 +1,4 @@
-// All Firebase Auth and Firestore calls live here.
-// This is the ONLY place we talk to Firebase for auth.
+// lib/features/auth/data/datasources/auth_remote_datasource.dart
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,6 +21,9 @@ abstract class AuthRemoteDataSource {
   Future<UserModel> loginWithGoogle();
   Future<void> logout();
   Future<UserModel?> getCurrentUser();
+  Future<void> sendPasswordResetEmail({required String email});
+  Future<bool> isEmailVerified();
+  Future<void> resendVerificationEmail();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -47,7 +49,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         email: email,
         password: password,
       );
-      // Fetch user data from Firestore
       final doc = await _firestore
           .collection(AppConstants.usersCollection)
           .doc(credential.user!.uid)
@@ -71,13 +72,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         email: email,
         password: password,
       );
+
+      // SEND VERIFICATION EMAIL immediately after account creation
+      await credential.user!.sendEmailVerification();
       final user = UserModel(
         uid: credential.user!.uid,
         name: name,
         email: email,
         createdAt: DateTime.now(),
       );
-      // Save user to Firestore
       await _firestore
           .collection(AppConstants.usersCollection)
           .doc(user.uid)
@@ -90,13 +93,35 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
+  Future<void> reloadUser() async {
+    await _firebaseAuth.currentUser?.reload();
+  }
+
+  @override
+  Future<bool> isEmailVerified() async {
+    await _firebaseAuth.currentUser?.reload();
+    return _firebaseAuth.currentUser?.emailVerified ?? false;
+  }
+
+  @override
+  Future<void> resendVerificationEmail() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+      }
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
   @override
   Future<UserModel> loginWithGoogle() async {
     try {
       final googleUser = await _googleSignIn.signIn();
-      if (googleUser == null)
+      if (googleUser == null) {
         throw const AuthException('Google sign-in cancelled');
-
+      }
       final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -107,17 +132,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       final firebaseUser = userCredential.user!;
 
-      // Check if user already exists in Firestore
       final doc = await _firestore
           .collection(AppConstants.usersCollection)
           .doc(firebaseUser.uid)
           .get();
+      if (doc.exists) return UserModel.fromMap(doc.data()!);
 
-      if (doc.exists) {
-        return UserModel.fromMap(doc.data()!);
-      }
-
-      // New user — save to Firestore
       final user = UserModel(
         uid: firebaseUser.uid,
         name: firebaseUser.displayName ?? 'User',
@@ -150,7 +170,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final firebaseUser = _firebaseAuth.currentUser;
       if (firebaseUser == null) return null;
-
       final doc = await _firestore
           .collection(AppConstants.usersCollection)
           .doc(firebaseUser.uid)
@@ -162,7 +181,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
-  /// Maps Firebase error codes to friendly messages
+  @override
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(_mapFirebaseAuthError(e.code));
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
   String _mapFirebaseAuthError(String code) {
     switch (code) {
       case 'user-not-found':

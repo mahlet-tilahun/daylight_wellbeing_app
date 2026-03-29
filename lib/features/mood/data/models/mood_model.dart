@@ -7,6 +7,7 @@ class MoodModel extends MoodEntity {
     required super.moodId,
     required super.userId,
     required super.moodType,
+    super.note = '',
     required super.createdAt,
   });
 
@@ -15,6 +16,7 @@ class MoodModel extends MoodEntity {
       moodId: map['moodId'] as String,
       userId: map['userId'] as String,
       moodType: map['moodType'] as String,
+      note: map['note'] as String? ?? '',
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
     );
   }
@@ -24,6 +26,7 @@ class MoodModel extends MoodEntity {
       'moodId': moodId,
       'userId': userId,
       'moodType': moodType,
+      'note': note,
       'createdAt': createdAt.millisecondsSinceEpoch,
     };
   }

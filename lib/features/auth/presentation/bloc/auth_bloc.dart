@@ -1,14 +1,8 @@
 // lib/features/auth/presentation/bloc/auth_bloc.dart
-// Handles auth events and emits the appropriate states.
-// UI never talks to Firebase directly — it only talks to this BLoC.
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/usecases/login_user.dart';
-import '../../domain/usecases/login_with_google.dart';
-import '../../domain/usecases/register_user.dart';
-import '../../domain/usecases/logout_user.dart';
-import '../../domain/usecases/get_current_user.dart';
+import '../../domain/usecases/auth_usecases.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -18,6 +12,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RegisterUser registerUser;
   final LogoutUser logoutUser;
   final GetCurrentUser getCurrentUser;
+  final SendPasswordReset sendPasswordReset;
+  final CheckEmailVerified checkEmailVerified;
+  final ResendVerificationEmail resendVerificationEmail;
 
   AuthBloc({
     required this.loginUser,
@@ -25,15 +22,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.registerUser,
     required this.logoutUser,
     required this.getCurrentUser,
+    required this.sendPasswordReset,
+    required this.checkEmailVerified,
+    required this.resendVerificationEmail,
   }) : super(const AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<LoginWithEmailRequested>(_onLoginWithEmail);
     on<LoginWithGoogleRequested>(_onLoginWithGoogle);
     on<RegisterRequested>(_onRegister);
     on<LogoutRequested>(_onLogout);
+    on<ForgotPasswordRequested>(_onForgotPassword);
+    on<EmailVerificationCheckRequested>(_onEmailVerificationCheck);
+    on<ResendVerificationEmailRequested>(_onResendVerificationEmail);
   }
 
-  /// Check if user is already logged in when app starts
   Future<void> _onAuthCheckRequested(
     AuthCheckRequested event,
     Emitter<AuthState> emit,
@@ -41,13 +43,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthLoading());
     final result = await getCurrentUser();
     if (result.isSuccess && result.data != null) {
-      emit(AuthAuthenticated(result.data!));
+      // Check if email is verified
+      final isVerifiedResult = await checkEmailVerified();
+      final isVerified = isVerifiedResult.isSuccess
+          ? isVerifiedResult.data!
+          : false;
+      if (isVerified) {
+        emit(AuthAuthenticated(result.data!));
+      } else {
+        emit(const AuthEmailNotVerified());
+      }
     } else {
       emit(const AuthUnauthenticated());
     }
   }
 
-  /// Handle email/password login
   Future<void> _onLoginWithEmail(
     LoginWithEmailRequested event,
     Emitter<AuthState> emit,
@@ -57,13 +67,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       LoginParams(email: event.email, password: event.password),
     );
     if (result.isSuccess) {
-      emit(AuthAuthenticated(result.data!));
+      // Check if email is verified before allowing login
+      final isVerifiedResult = await checkEmailVerified();
+      final isVerified = isVerifiedResult.isSuccess
+          ? isVerifiedResult.data!
+          : false;
+      if (isVerified) {
+        emit(AuthAuthenticated(result.data!));
+      } else {
+        emit(const AuthEmailNotVerified());
+      }
     } else {
       emit(AuthError(result.error!));
     }
   }
 
-  /// Handle Google sign-in
   Future<void> _onLoginWithGoogle(
     LoginWithGoogleRequested event,
     Emitter<AuthState> emit,
@@ -71,13 +89,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthLoading());
     final result = await loginWithGoogle();
     if (result.isSuccess) {
-      emit(AuthAuthenticated(result.data!));
+      // Google users typically have verified emails, but check anyway
+      final isVerifiedResult = await checkEmailVerified();
+      final isVerified = isVerifiedResult.isSuccess
+          ? isVerifiedResult.data!
+          : true; // Google is trusted
+      if (isVerified) {
+        emit(AuthAuthenticated(result.data!));
+      } else {
+        emit(const AuthEmailNotVerified());
+      }
     } else {
       emit(AuthError(result.error!));
     }
   }
 
-  /// Handle new user registration
   Future<void> _onRegister(
     RegisterRequested event,
     Emitter<AuthState> emit,
@@ -91,21 +117,64 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ),
     );
     if (result.isSuccess) {
-      emit(AuthAuthenticated(result.data!));
+      emit(const AuthEmailNotVerified()); // changed from AuthAuthenticated
     } else {
       emit(AuthError(result.error!));
     }
   }
 
-  /// Handle logout
-  Future<void> _onLogout(
-    LogoutRequested event,
+  Future<void> _onEmailVerificationCheck(
+    EmailVerificationCheckRequested event,
     Emitter<AuthState> emit,
   ) async {
+    final result = await getCurrentUser();
+    if (result.isSuccess && result.data != null) {
+      // Check if email is verified via Firebase directly
+      final isVerifiedResult = await checkEmailVerified();
+      final isVerified = isVerifiedResult.isSuccess
+          ? isVerifiedResult.data!
+          : false;
+      if (isVerified) {
+        emit(AuthAuthenticated(result.data!));
+      }
+      // If not verified, stay on AuthEmailNotVerified — don't emit anything
+    }
+  }
+
+  Future<void> _onResendVerificationEmail(
+    ResendVerificationEmailRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    final result = await resendVerificationEmail();
+    if (result.isSuccess) {
+      emit(const AuthVerificationEmailSent());
+      // Go back to waiting state
+      emit(const AuthEmailNotVerified());
+    } else {
+      emit(AuthError(result.error!));
+    }
+  }
+
+  Future<void> _onLogout(LogoutRequested event, Emitter<AuthState> emit) async {
     emit(const AuthLoading());
     final result = await logoutUser();
     if (result.isSuccess) {
       emit(const AuthUnauthenticated());
+    } else {
+      emit(AuthError(result.error!));
+    }
+  }
+
+  Future<void> _onForgotPassword(
+    ForgotPasswordRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    final result = await sendPasswordReset(
+      SendPasswordResetParams(email: event.email),
+    );
+    if (result.isSuccess) {
+      emit(const AuthPasswordResetSent());
     } else {
       emit(AuthError(result.error!));
     }

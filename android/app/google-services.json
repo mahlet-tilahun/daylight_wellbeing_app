@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "669897121997",
+    "project_id": "daylight-wellbeing-app",
+    "storage_bucket": "daylight-wellbeing-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:669897121997:android:4ad3fe93dc43eb24eac984",
+        "android_client_info": {
+          "package_name": "com.example.daylight_wellbeing_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "669897121997-8qg5d59iemktar64fj1fj02linlla9of.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.daylight_wellbeing_app",
+            "certificate_hash": "7ca0ca9ef24e690e212a5981de592cee48bbd9fa"
+          }
+        },
+        {
+          "client_id": "669897121997-rfmofe0vgitgt0khnudrjl8egj037ngi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmLY71QwX4lRnKiYTEouyFIawd-SZtkp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "669897121997-rfmofe0vgitgt0khnudrjl8egj037ngi.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "669897121997-krmp6nsndhi1lmitevhmodhte0jf3a7k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.daylightWellbeingApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,31 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "daylight-wellbeing-app",
+          "appId": "1:669897121997:android:4ad3fe93dc43eb24eac984",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "daylight-wellbeing-app",
+          "configurations": {
+            "android": "1:669897121997:android:4ad3fe93dc43eb24eac984",
+            "ios": "1:669897121997:ios:69dbad6ce3e19f42eac984",
+            "macos": "1:669897121997:ios:69dbad6ce3e19f42eac984",
+            "web": "1:669897121997:web:db21ff6ebe5c62fdeac984",
+            "windows": "1:669897121997:web:f3632cce851eb15deac984"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "nam5",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

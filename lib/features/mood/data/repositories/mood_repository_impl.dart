@@ -14,10 +14,11 @@ class MoodRepositoryImpl implements MoodRepository {
   Future<Result<MoodEntity>> addMood({
     required String userId,
     required String moodType,
+    String note = '',
   }) async {
     try {
       final mood = await remoteDataSource.addMood(
-          userId: userId, moodType: moodType);
+          userId: userId, moodType: moodType, note: note);
       return Result.success(mood);
     } on ServerException catch (e) {
       return Result.failure(e.message);
@@ -38,6 +39,19 @@ class MoodRepositoryImpl implements MoodRepository {
   Future<Result<void>> deleteMood({required String moodId}) async {
     try {
       await remoteDataSource.deleteMood(moodId: moodId);
+      return const Result.success(null);
+    } on ServerException catch (e) {
+      return Result.failure(e.message);
+    }
+  }
+
+  @override
+  Future<Result<void>> updateMoodNote({
+    required String moodId,
+    required String note,
+  }) async {
+    try {
+      await remoteDataSource.updateMoodNote(moodId: moodId, note: note);
       return const Result.success(null);
     } on ServerException catch (e) {
       return Result.failure(e.message);
